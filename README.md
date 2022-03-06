@@ -31,7 +31,7 @@
 
     my_file = "switch01_running_config.txt"
     parse = ConfigParser(my_file)
-    
+    obj_list = parse.find_parent_child("^interface")
 
     for i in obj_list:
         vlan_200 = re.search("Vlan200", i.parent)
