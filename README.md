@@ -4,6 +4,8 @@
 
 * Finding Routing Protocol
 ```
+    from ConfigParser import *
+    
     
     my_file = "switch01_running_config.txt"
     parse = ConfigParser(my_file)
@@ -16,6 +18,11 @@
  ```
  * Finding Interface and Helper address Example 
 ```
+
+    from ConfigParser import *
+
+
+
     for i in obj_list:
         vlan_200 = re.search("Vlan200", i.parent)
         if vlan_200:
