@@ -7,11 +7,21 @@
 
 ## Regex Search Strings:
 
+* to find lines in the configuration starting with "router"
 ```ruby
+parse.find_parent_child("^router")
+```
 
-parse.find_parent_child("^router") --> to find lines in the configuration starting with "router"
-parse.find_parent_child("^.") --> to parse all confuguration into parent and child format
-parse.find_parent_child("^.*Loopback") --> to find lines in the configuration that has "Loopback" in them
+
+* to parse all confuguration into parent and child format
+```ruby
+parse.find_parent_child("^.")
+```
+
+
+* to find lines in the configuration that has "Loopback" in them
+```ruby
+parse.find_parent_child("^.*Loopback")
 
 ```
 
