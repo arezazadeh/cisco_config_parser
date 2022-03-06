@@ -32,7 +32,7 @@ parse.find_parent_child("^.*Loopback")
 
 * Finding Routing Protocol
 ```ruby
-    from ConfigParser import *
+    from ConfigParser import ConfigParser
     
     
     my_file = "switch01_running_config.txt"
@@ -74,7 +74,7 @@ parse.find_parent_child("^.*Loopback")
  * Finding Interface and Helper address Example 
 
 ```ruby
-    from ConfigParser import *
+    from ConfigParser import ConfigParser
 
 
     my_file = "switch01_running_config.txt"
@@ -95,4 +95,36 @@ Output:
 interface Vlan200
  ip helper-address 192.168.1.10
  ip helper-address 172.31.10.10
+```
+
+* Finding SVI in the config with all its child configuration
+
+```ruby 
+
+from ConfigParser import ConfigParser
+
+
+
+file = "switch_01-run_config.txt"
+parser = ConfigParser(file)
+
+res = parser.get_svi_objects()
+
+for i in res:
+    if "lan200" in i.intf:
+        print(i.intf)
+        print(i.ip_add)
+        print(i.description)
+        print(i.vrf)
+        print(i.helper)
+```
+
+output:
+
+```
+interface Vlan200
+ ip address 10.20.80.1 255.255.254.0
+ description USER VLAN-
+ ip vrf forwarding vrf_A
+[' ip helper-address 10.10.1.10 ', ' ip helper-address 10.20.1.10']
 ```
