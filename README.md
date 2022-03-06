@@ -8,7 +8,7 @@
 ## Examples:
 
 * Finding Routing Protocol
-```
+```ruby
     from ConfigParser import *
     
     
@@ -49,8 +49,8 @@
  ```
  
  * Finding Interface and Helper address Example 
-```
 
+```ruby
     from ConfigParser import *
 
 
