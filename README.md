@@ -23,6 +23,31 @@
             print(child_obj)
  
  ```
+ Output:
+ 
+ ```
+ router eigrp 252
+ !
+ address-family ipv4 vrf vrf_A autonomous-system 252
+  network 10.10.10.0 0.0.0.63
+  passive-interface default
+  no passive-interface Vlan3123
+  no passive-interface Vlan3124
+  eigrp stub connected summary
+ exit-address-family
+ !
+ address-family ipv4 vrf vrf_B autonomous-system 252
+  network 10.20.10.0 0.0.0.3
+  network 10.20.11.0 0.0.0.3
+  passive-interface default
+  no passive-interface Vlan3223
+  no passive-interface Vlan3224
+  eigrp stub connected summary
+ exit-address-family
+ !
+
+ ```
+ 
  * Finding Interface and Helper address Example 
 ```
 
