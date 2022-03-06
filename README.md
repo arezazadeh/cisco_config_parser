@@ -5,6 +5,13 @@
 
 `pip install ConfigParser-arezazadeh`
 
+## Regex Search Strings:
+
+parse.find_parent_child("^router") --> to find lines in the configuration starting with "router"
+parse.find_parent_child("^.") --> to parse all confuguration into parent and child format
+parse.find_parent_child("^.*Loopback") --> to find lines in the configuration that has "Loopback" in them
+
+
 ## Examples:
 
 * Finding Routing Protocol
