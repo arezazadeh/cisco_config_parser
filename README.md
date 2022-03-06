@@ -116,7 +116,9 @@ for i in res:
         print(i.ip_add)
         print(i.description)
         print(i.vrf)
+        print(i.state)
         print(i.helper)
+        print("!")
 ```
 
 output:
@@ -126,5 +128,13 @@ interface Vlan200
  ip address 10.20.80.1 255.255.254.0
  description USER VLAN-
  ip vrf forwarding vrf_A
+ no shutdown
+[' ip helper-address 10.10.1.10 ', ' ip helper-address 10.20.1.10']
+!
+interface Vlan100
+ ip address 10.20.81.1 255.255.254.0
+ description USER VLAN-
+ ip vrf forwarding vrf_B
+ shutdown
 [' ip helper-address 10.10.1.10 ', ' ip helper-address 10.20.1.10']
 ```
