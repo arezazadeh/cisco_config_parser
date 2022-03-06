@@ -3,7 +3,9 @@
 
 ## Install the package 
 
-`pip install ConfigParser-arezazadeh`
+```ruby
+pip install CiscoConfigurationParser
+```
 
 ## Regex Search Strings:
 
