@@ -41,3 +41,10 @@
                 if str(c_obj).startswith(" ip helper"):
                     print(str(c_obj))
 ```
+Output: 
+
+```
+interface Vlan200
+ ip helper-address 192.168.1.10
+ ip helper-address 172.31.10.10
+```
