@@ -1,6 +1,9 @@
 # ConfigParser
 ## This Package will parse the Cisco running-configuration File in a parent/child style
 
+## Install the package 
+
+`pip install ConfigParser-arezazadeh`
 
 * Finding Routing Protocol
 ```
