@@ -27,6 +27,9 @@
     from ConfigParser import *
 
 
+    my_file = "switch01_running_config.txt"
+    parse = ConfigParser(my_file)
+    
 
     for i in obj_list:
         vlan_200 = re.search("Vlan200", i.parent)
