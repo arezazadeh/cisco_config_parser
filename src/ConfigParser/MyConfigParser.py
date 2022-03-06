@@ -8,12 +8,13 @@ class ParentObj:
 
 
 class IntObj:
-    def __init__(self, intf, ip_add, description, vrf, helper):
+    def __init__(self, intf, ip_add, description, vrf, helper, state):
         self.intf = intf
         self.ip_add = ip_add
         self.description = description
         self.vrf = vrf
         self.helper = helper
+        self.state = state
 
     def __str__(self):
         return f"IntObj Class - {self.intf}"
@@ -21,8 +22,7 @@ class IntObj:
 
 class ConfigParser:
     """
-    :Example: 
-    - Finding Routing Protocol
+    - Example: Finding Routing Protocol
     my_file = "stnhlv-21-sa01_running_config.txt"
 
     parse = ConfigParser(my_file)
@@ -43,7 +43,6 @@ class ConfigParser:
             for c_obj in i.child:
                 if str(c_obj).startswith(" ip helper"):
                     print(str(c_obj))
-    
     """
 
     def __init__(self, file):
@@ -103,27 +102,35 @@ class ConfigParser:
         description = ""
         ip_add = ""
         vrf_member = ""
+        state = ""
         for i in intf_vlan_list:
             helper_list = []
             line = re.split("\n", i)
+            line.remove("")
+            line.remove("")
             for ent in line:
-                if ent:
-                    if ent.startswith("interface Vlan"):
-                        intf = ent
-                    if ent.startswith(" description"):
-                        description = ent
-
-                    if ent.startswith(" ip address"):
-                        ip_add = ent
-
-                    if ent.startswith(" ip helper-address"):
-                        helper_list.append(ent)
-
-                    if ent.startswith(" ip vrf for"):
-                        vrf_member = ent
-
-            intf_entity = IntObj(intf, ip_add, description, vrf_member, helper_list)
+                if ent.startswith(" shutdown"):
+                    state = ent
+                if ent.startswith("interface Vlan"):
+                    intf = ent
+                if ent.startswith(" description"):
+                    description = ent
+                if ent.startswith(" ip address"):
+                    ip_add = ent
+                if ent.startswith(" ip helper-address"):
+                    helper_list.append(ent)
+                if ent.startswith(" ip vrf for"):
+                    vrf_member = ent
+            if state == "":
+                state = " no shutdown"
+            intf_entity = IntObj(intf, ip_add, description, vrf_member, helper_list, state)
             self.obj_list_2.append(intf_entity)
+            
+            intf = ""
+            description = ""
+            ip_add = ""
+            vrf_member = ""
+            state = ""
 
         return self.obj_list_2
 
