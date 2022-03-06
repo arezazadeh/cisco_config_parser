@@ -38,6 +38,6 @@
         if vlan_200:
             print(i.parent)
             for c_obj in i.child:
-                if str(c_obj).startswith("\s+ip helper"):
+                if str(c_obj).startswith(" ip helper"):
                     print(str(c_obj))
 ```
