@@ -14,6 +14,8 @@
     
     my_file = "switch01_running_config.txt"
     parse = ConfigParser(my_file)
+    
+    
     obj_list = parse.find_parent_child("^router")
     for i in obj_list:
         print(i.parent)
