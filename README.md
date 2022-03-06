@@ -8,9 +8,9 @@
 ## Regex Search Strings:
 
 ```
-parse.find_parent_child("^router") --> to find lines in the configuration starting with "router"
-parse.find_parent_child("^.") --> to parse all confuguration into parent and child format
-parse.find_parent_child("^.*Loopback") --> to find lines in the configuration that has "Loopback" in them
+![#1589F0]parse.find_parent_child("^router")`#1589F0` --> to find lines in the configuration starting with "router"
+![#1589F0]parse.find_parent_child("^.")`#1589F0` --> to parse all confuguration into parent and child format
+![#1589F0]parse.find_parent_child("^.*Loopback")`#1589F0` --> to find lines in the configuration that has "Loopback" in them
 ```
 
 
