@@ -1,6 +1,6 @@
 import re
 import ipaddress
-from obj import *
+from .obj import *
 
 
 class ConfigParser:
