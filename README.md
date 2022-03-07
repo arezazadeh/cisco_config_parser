@@ -3,6 +3,8 @@
 
 ## Install the package 
 
+https://pypi.org/project/cisco-config-parser/
+
 ```ruby
 pip install cisco-config-parser
 ```
