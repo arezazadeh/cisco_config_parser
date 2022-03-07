@@ -72,11 +72,6 @@ class ConfigParser:
         obj_list = []
         switchport_interface_list = []
         port_list = self.get_interface()
-        port = ""
-        vlan = ""
-        voice = ""
-        description = ""
-        mode = ""
 
         for i in port_list:
             interface_parent = re.split("\n", i)
@@ -85,10 +80,15 @@ class ConfigParser:
                     switchport_interface_list.append(i)
 
         for line in switchport_interface_list:
-            split_line = re.split("\n", line)
-            split_line.remove("")
-            split_line.remove("")
+            port = ""
+            vlan = ""
+            voice = ""
+            description = ""
+            mode = ""
+            
+            split_line = re.split("\n", line.strip())
             port = split_line[0]
+            
             for i in split_line:
                 if "description" in i:
                     description = i
@@ -113,11 +113,6 @@ class ConfigParser:
                                        mode=mode
                                        )
                             )
-            port = ""
-            vlan = ""
-            voice = ""
-            description = ""
-            mode = ""
 
         return obj_list
 
@@ -130,19 +125,19 @@ class ConfigParser:
             for line in interface_parent:
                 if "ip address" in line or "ipv4 address" in line:
                     routed_port_list.append(i)
-        intf = ""
-        description = ""
-        ip_add = ""
-        mask = ""
-        subnet = ""
-        vrf_member = ""
-        state = ""
 
         for line in routed_port_list:
+            
+            intf = ""
+            description = ""
+            ip_add = ""
+            mask = ""
+            subnet = ""
+            vrf_member = ""
+            state = ""
             helper_list = []
-            split_line = re.split("\n", line)
-            split_line.remove("")
-            split_line.remove("")
+            
+            split_line = re.split("\n", line.strip())
             
             for ent in split_line:
                 if ent.startswith(" shutdown"):
@@ -193,13 +188,7 @@ class ConfigParser:
                                        state=state
                                        )
                             )
-            intf = ""
-            description = ""
-            ip_add = ""
-            mask = ""
-            subnet = ""
-            vrf_member = ""
-            state = ""
+
         return obj_list
 
     def get_svi_objects(self):
@@ -229,39 +218,42 @@ class ConfigParser:
                 if parent_obj:
                     intf_vlan_list.append(obj)
 
-        intf = ""
-        description = ""
-        ip_add = ""
-        vrf_member = ""
-        state = ""
         for i in intf_vlan_list:
-            helper_list = []
-            line = re.split("\n", i)
-            line.remove("")
-            line.remove("")
-            for ent in line:
-                if ent.startswith(" shutdown"):
-                    state = ent
-                if ent.startswith("interface Vlan"):
-                    intf = ent
-                if ent.startswith(" description"):
-                    description = ent
-                if ent.startswith(" ip address"):
-                    ip_add = ent
-                if ent.startswith(" ip helper-address"):
-                    helper_list.append(ent)
-                if ent.startswith(" ip vrf for"):
-                    vrf_member = ent
-            if state == "":
-                state = " no shutdown"
-            intf_entity = IntObj(intf, ip_add, description, vrf_member, helper_list, state)
-            self.obj_list_2.append(intf_entity)
             
             intf = ""
             description = ""
             ip_add = ""
             vrf_member = ""
             state = ""
+            
+            helper_list = []
+            
+            line = re.split("\n", i.strip())
+
+            for ent in line:
+                if ent.startswith(" shutdown"):
+                    state = ent
+                    
+                if ent.startswith("interface Vlan"):
+                    intf = ent
+                    
+                if ent.startswith(" description"):
+                    description = ent
+                    
+                if ent.startswith(" ip address"):
+                    ip_add = ent
+                    
+                if ent.startswith(" ip helper-address"):
+                    helper_list.append(ent)
+                    
+                if ent.startswith(" ip vrf for"):
+                    vrf_member = ent
+                    
+            if state == "":
+                state = " no shutdown"
+                
+            intf_entity = IntObj(intf, ip_add, description, vrf_member, helper_list, state)
+            self.obj_list_2.append(intf_entity)
 
         return self.obj_list_2
 

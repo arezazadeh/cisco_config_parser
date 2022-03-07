@@ -32,6 +32,83 @@ parse.find_parent_child("^.*Loopback")
 
 ## Examples:
 
+* Getting Routed Ports
+
+```ruby 
+
+from cisco_config_parser import ConfigParser
+
+file = "running-config.txt"
+
+parser = ConfigParser(file)
+
+obj = parser.get_routed_port()
+
+for i in obj:
+    print(i.intf)
+    print(i.ip_add, i.mask)
+    print(i.subnet)
+    print(i.description)
+    print(i.vrf)
+    print(i.description)
+    print(i.state)
+
+```
+output: 
+
+```
+interface TenGigE0/3/0/29.3240
+10.10.1.1 255.255.255.248
+10.10.1.0/29
+ description Connected to device_A
+ vrf vrf_A
+ no shutdown
+!
+interface TenGigE0/3/0/29.3340
+10.244.10.1 255.255.255.252
+10.244.10.0/30
+ description Connected to device_A
+ vrf vrf_B
+ no shutdown
+```
+
+* Getting Switchport:
+
+```ruby
+
+from cisco_config_parser import ConfigParser
+
+file = "stnnwk-21-sa01_run_config.txt"
+
+parser = ConfigParser(file)
+
+obj = parser.get_switchport()
+
+for i in obj:
+    print(i.port)
+    print(i.mode)
+    print(i.vlan)
+    print(i.voice)
+    print(i.description)
+    print("!")
+```
+output:
+
+```
+  
+interface GigabitEthernet10/38
+Access Port
+Vlan  200
+Voice  vlan 700
+ description ent-user
+!
+interface GigabitEthernet10/38
+Access Port
+Vlan  200
+Voice  vlan 700
+ description ent-user
+```
+
 * Finding Routing Protocol
 ```ruby
     from cisco_config_parser import ConfigParser
@@ -133,10 +210,4 @@ interface Vlan200
  no shutdown
 [' ip helper-address 10.10.1.10 ', ' ip helper-address 10.20.1.10']
 !
-interface Vlan100
- ip address 10.20.81.1 255.255.254.0
- description USER VLAN-
- ip vrf forwarding vrf_B
- shutdown
-[' ip helper-address 10.10.1.10 ', ' ip helper-address 10.20.1.10']
 ```
