@@ -1,3 +1,3 @@
-from .MyConfigParser import ConfigParser
+from .cisco-config-parser import ConfigParser
 
 
