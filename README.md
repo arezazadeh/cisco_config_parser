@@ -52,6 +52,7 @@ for i in obj:
     print(i.vrf)
     print(i.description)
     print(i.state)
+    print("!")
 
 ```
 output: 
