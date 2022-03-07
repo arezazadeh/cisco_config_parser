@@ -4,7 +4,7 @@
 ## Install the package 
 
 ```ruby
-pip install cisco-config-parser
+pip install cisco_config_parser
 ```
 
 ## Regex Search Strings:
