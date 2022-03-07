@@ -4,7 +4,7 @@
 ## Install the package 
 
 ```ruby
-pip install cisco_config_parser
+pip install cisco-config-parser
 ```
 
 ## Regex Search Strings:
@@ -32,7 +32,7 @@ parse.find_parent_child("^.*Loopback")
 
 * Finding Routing Protocol
 ```ruby
-    from ConfigParser import ConfigParser
+    from cisco_config_parser import ConfigParser
     
     
     my_file = "switch01_running_config.txt"
@@ -74,7 +74,7 @@ parse.find_parent_child("^.*Loopback")
  * Finding Interface and Helper address Example 
 
 ```ruby
-    from ConfigParser import ConfigParser
+    from cisco_config_parser import ConfigParser
 
 
     my_file = "switch01_running_config.txt"
@@ -101,7 +101,7 @@ interface Vlan200
 
 ```ruby 
 
-from ConfigParser import ConfigParser
+from cisco_config_parser import ConfigParser
 
 
 
