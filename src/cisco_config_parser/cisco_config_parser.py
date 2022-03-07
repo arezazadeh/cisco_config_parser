@@ -34,8 +34,8 @@ class ConfigParser:
         self.obj_list_1 = []
         self.obj_list_2 = []
 
-    if not self.file.endswith(".txt"):
-        raise FileReadError(self.file)
+    if not file.endswith(".txt"):
+        raise FileReadError(file)
 
     def find_parent_child(self, regex):
         """
