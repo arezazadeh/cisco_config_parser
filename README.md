@@ -1,10 +1,10 @@
 # ConfigParser
-## This Package will parse the Cisco running-configuration File in a parent/child style
+## This Package Will Parse Cisco IOS, IOS-XE and IOS-XR Configuration File.
 
 ## Install the package 
 
 ```ruby
-pip install CiscoConfigurationParser
+pip install cisco-config-parser
 ```
 
 ## Regex Search Strings:
@@ -32,7 +32,7 @@ parse.find_parent_child("^.*Loopback")
 
 * Finding Routing Protocol
 ```ruby
-    from ConfigParser import ConfigParser
+    from cisco-config-parser import ConfigParser
     
     
     my_file = "switch01_running_config.txt"
@@ -74,7 +74,7 @@ parse.find_parent_child("^.*Loopback")
  * Finding Interface and Helper address Example 
 
 ```ruby
-    from ConfigParser import ConfigParser
+    from cisco-config-parser import ConfigParser
 
 
     my_file = "switch01_running_config.txt"
@@ -101,7 +101,7 @@ interface Vlan200
 
 ```ruby 
 
-from ConfigParser import ConfigParser
+from cisco-config-parser import ConfigParser
 
 
 
