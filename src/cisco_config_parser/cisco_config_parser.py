@@ -128,7 +128,7 @@ class ConfigParser:
         for i in port_list:
             interface_parent = re.split("\n", i)
             for line in interface_parent:
-                if "ip address" in line:
+                if "ip address" in line or "ipv4 address" in line:
                     routed_port_list.append(i)
         intf = ""
         description = ""
@@ -143,13 +143,17 @@ class ConfigParser:
             split_line = re.split("\n", line)
             split_line.remove("")
             split_line.remove("")
+            
             for ent in split_line:
                 if ent.startswith(" shutdown"):
                     state = ent
+                    
                 if ent.startswith("interface "):
                     intf = ent
+                    
                 if ent.startswith(" description"):
                     description = ent
+                    
                 if ent.startswith(" ip address"):
                     address = ent.split("ip address")[1]
                     addr_mask = address.split()
@@ -157,20 +161,34 @@ class ConfigParser:
                     mask = addr_mask[1]
                     subnet = ipaddress.ip_network(f"{ip_add}/{mask}", strict=False)
 
+                if ent.startswith(" ipv4 address"):
+                    address = ent.split("ipv4 address")[1]
+                    addr_mask = address.split()
+                    ip_add = addr_mask[0]
+                    mask = addr_mask[1]
+                    subnet = ipaddress.ip_network(f"{ip_add}/{mask}", strict=False)
+                
                 if ent.startswith(" ip helper-address"):
                     helper_list.append(ent)
+                    
                 if ent.startswith(" ip vrf for"):
                     vrf_member = ent
+                    
                 if ent.startswith(" vrf member"):
                     vrf_member = ent
+                
+                if ent.startswith(" vrf"):
+                    vrf_member = ent
+                
             if state == "":
                 state = " no shutdown"
+                
             obj_list.append(RoutedPort(intf, 
                                        ip_add=ip_add, 
                                        mask=mask, 
                                        subnet=subnet, 
                                        description=description, 
-                                       vrf_member=vrf_member, 
+                                       vrf=vrf_member, 
                                        helper_list=helper_list, 
                                        state=state
                                        )
