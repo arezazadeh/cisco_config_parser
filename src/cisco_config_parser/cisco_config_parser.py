@@ -1,6 +1,7 @@
 import re
 import ipaddress
 from .obj import *
+from .exceptions import *
 
 
 class ConfigParser:
@@ -32,6 +33,9 @@ class ConfigParser:
         self.file = file
         self.obj_list_1 = []
         self.obj_list_2 = []
+
+    if not self.file.endswith(".txt"):
+        raise FileReadError(self.file)
 
     def find_parent_child(self, regex):
         """
