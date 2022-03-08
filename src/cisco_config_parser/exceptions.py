@@ -8,3 +8,14 @@ class FileReadError(Exception):
 
     def __str__(self):
         return f'{self.file} -> {self.message}'
+
+
+class SSHError(Exception):
+
+    def __init__(self, host, message="SSH Error, Device is not reachable or Authentication Failed"):
+        self.host = host
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.host} -> {self.message}"
