@@ -28,11 +28,7 @@ https://pypi.org/project/cisco-config-parser/
 ```ruby
 pip install cisco-config-parser
 ```
-if you wish to use the SSH feature, please install `netmiko` as well
 
-```ruby
-pip install netmiko
-```
 
 ## Regex Search Strings:
 
