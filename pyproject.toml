@@ -3,7 +3,4 @@ requires = [
     "setuptools>=42",
     "wheel"
 ]
-install_requires = [
-    'netmiko>=3.4.0'
-]
 build-backend = "setuptools.build_meta"
