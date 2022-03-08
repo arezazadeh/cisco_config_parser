@@ -94,6 +94,9 @@ def parse_switch_port(port_list):
         port = split_line[0]
         
         for i in split_line:
+            if i.strip().startswith("shutdown"):
+                state = i
+                
             if "description" in i:
                 description = i
 
@@ -109,12 +112,15 @@ def parse_switch_port(port_list):
                 mode = "Access Port"
             if "switchport trunk" in i:
                 mode = "Trunk Port"
+        if state == "":
+            state = " no shutdown"
 
         switchport_obj = SwitchPort(port,
                                     vlan=vlan,
                                     description=description,
                                     voice=voice,
                                     mode=mode,
+                                    state=state
                                     )
 
         obj_list.append(switchport_obj)
