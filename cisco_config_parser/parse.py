@@ -89,6 +89,7 @@ def parse_switch_port(port_list):
         voice = ""
         description = ""
         mode = ""
+        state = ""
         
         split_line = re.split("\n", line.strip())
         port = split_line[0]
