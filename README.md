@@ -21,12 +21,17 @@ cisco_xr
 ```
 pass the kwargs then it will login to your device and does the `show running-config` and will parse it. 
 
-## Install the package 
+## Install the package
 
 https://pypi.org/project/cisco-config-parser/
 
 ```ruby
 pip install cisco-config-parser
+```
+if you wish to use the SSH feature, please install `netmiko` as well
+
+```ruby
+pip install netmiko
 ```
 
 ## Regex Search Strings:
