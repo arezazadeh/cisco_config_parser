@@ -2,6 +2,7 @@ import re
 import ipaddress
 from .obj import *
 from .exceptions import *
+from .ssh import *
 
 
 class ConfigParser:
@@ -29,46 +30,78 @@ class ConfigParser:
                     print(str(c_obj))
     """
 
-    def __init__(self, file):
-        self.file = file
-        self.obj_list_1 = []
-        self.obj_list_2 = []
+    def __init__(self, *kwargs):
+        """
+        :param file: text file with .txt extension
+        :param kwargs:
+        file:Text File with .txt extension
+        ssh:bool => default False
+        host:str => default None
+        user:str => default None
+        password:str => default None
+        device_type:str => default cisco_ios (cisco_ios, cisco_xe, cisco_xr)
+        """
+        
+        self.file = kwargs.get("file") or None
+        self.ssh = kwargs.get("ssh") or False
+        self.host = kwargs.get("host") or None
+        self.user = kwargs.get("user") or None
+        self.password = kwargs.get("password") or None
+        self.device_type = kwargs.get("device_type") or "cisco_ios"
+        
+        if self.ssh:
+            self.ssh_to = MySSH(self.host, self.user, self.password, self.device_type)
 
-        if not self.file.endswith(".txt"):
-            raise FileReadError(self.file)
+        if self.file:
+            if not self.file.endswith(".txt"):
+                raise FileReadError(self.file)
+
+
+    def read_file(self):
+        with open(self.file, "r") as f:
+            content = f.read()
+            return content
+
+    def split_content(self, content, regex):
+        obj_list = []
+        split_on_bang = re.split("^!$", content, flags=re.MULTILINE)
+        for i in split_on_bang:
+            regex_result = re.match(regex, i.strip())
+            if regex_result:
+                if i.strip().startswith(regex_result.group()):
+                    regex_parent_child = re.split("\n", i.strip())
+                    parent = regex_parent_child[0]
+                    regex_parent_child.pop(0)
+                    child = regex_parent_child
+                    obj_list.append(ParentObj(parent, child))
+        return obj_list
+
 
     def find_parent_child(self, regex):
         """
         :param regex: parsing the file based on the input regex
         :return: List (obj_list)
         """
-        with open(self.file, "r") as f:
-            content = f.read()
-            split_on_bang = re.split("^!$", content, flags=re.MULTILINE)
-
-            for i in split_on_bang:
-                regex_result = re.match(regex, i.strip())
-                if regex_result:
-                    if i.strip().startswith(regex_result.group()):
-                        regex_parent_child = re.split("\n", i.strip())
-                        parent = regex_parent_child[0]
-                        regex_parent_child.pop(0)
-                        child = regex_parent_child
-                        self.obj_list_1.append(ParentObj(parent, child))
-
-        return self.obj_list_1
-
+        if self.ssh:
+            content = self.ssh_to.ssh("show running-config")
+            self.ssh_to.ssh_conn.disconnect()
+            obj_list = self.split_content(content, regex)
+            return obj_list
+        else:
+            content = self.read_file()
+            obj_list = self.split_content(content, regex)
+            return obj_list
 
     def get_interface(self):
         port_list = []
 
-        with open(self.file, "r") as f:
-            content = f.read()
-            split_on_bang = re.split("^!$", content, flags=re.MULTILINE)
-            for obj in split_on_bang:
-                parent_obj = re.findall("^interface\s+(.*)", obj, flags=re.MULTILINE)
-                if parent_obj:
-                    port_list.append(obj)
+        content = self.read_file()
+        
+        split_on_bang = re.split("^!$", content, flags=re.MULTILINE)
+        for obj in split_on_bang:
+            parent_obj = re.findall("^interface\s+(.*)", obj, flags=re.MULTILINE)
+            if parent_obj:
+                port_list.append(obj)
 
         return port_list
 
@@ -144,39 +177,39 @@ class ConfigParser:
             split_line = re.split("\n", line.strip())
             
             for ent in split_line:
-                if ent.startswith(" shutdown"):
+                if ent.strip().startswith("shutdown"):
                     state = ent
                     
-                if ent.startswith("interface "):
+                if ent.strip().startswith("interface "):
                     intf = ent
                     
-                if ent.startswith(" description"):
+                if ent.strip().startswith("description"):
                     description = ent
                     
-                if ent.startswith(" ip address"):
+                if ent.strip().startswith(" ip address"):
                     address = ent.split("ip address")[1]
                     addr_mask = address.split()
                     ip_add = addr_mask[0]
                     mask = addr_mask[1]
                     subnet = ipaddress.ip_network(f"{ip_add}/{mask}", strict=False)
 
-                if ent.startswith(" ipv4 address"):
+                if ent.strip().startswith(" ipv4 address"):
                     address = ent.split("ipv4 address")[1]
                     addr_mask = address.split()
                     ip_add = addr_mask[0]
                     mask = addr_mask[1]
                     subnet = ipaddress.ip_network(f"{ip_add}/{mask}", strict=False)
                 
-                if ent.startswith(" ip helper-address"):
+                if ent.strip().startswith("ip helper-address"):
                     helper_list.append(ent)
                     
-                if ent.startswith(" ip vrf for"):
+                if ent.strip().startswith("ip vrf for"):
                     vrf_member = ent
                     
-                if ent.startswith(" vrf member"):
+                if ent.strip().startswith("vrf member"):
                     vrf_member = ent
                 
-                if ent.startswith(" vrf"):
+                if ent.strip().startswith("vrf"):
                     vrf_member = ent
                 
             if state == "":
@@ -196,6 +229,7 @@ class ConfigParser:
         return obj_list
 
     def get_svi_objects(self):
+        obj_list = []
         """
         :return: list of "obj_list" where you can forloop over and use IntObj methods to access the values
 
@@ -214,13 +248,13 @@ class ConfigParser:
         """
         intf_vlan_list = []
 
-        with open(self.file, "r") as f:
-            content = f.read()
-            split_on_bang = re.split("^!$", content, flags=re.MULTILINE)
-            for obj in split_on_bang:
-                parent_obj = re.findall("^interface Vlan(.*)", obj, flags=re.MULTILINE)
-                if parent_obj:
-                    intf_vlan_list.append(obj)
+        content = self.read_file()
+        
+        split_on_bang = re.split("^!$", content, flags=re.MULTILINE)
+        for obj in split_on_bang:
+            parent_obj = re.findall("^interface Vlan(.*)", obj, flags=re.MULTILINE)
+            if parent_obj:
+                intf_vlan_list.append(obj)
 
         for i in intf_vlan_list:
             
@@ -235,30 +269,30 @@ class ConfigParser:
             line = re.split("\n", i.strip())
 
             for ent in line:
-                if ent.startswith(" shutdown"):
+                if ent.strip().startswith("shutdown"):
                     state = ent
                     
-                if ent.startswith("interface Vlan"):
+                if ent.strip().startswith("interface Vlan"):
                     intf = ent
                     
-                if ent.startswith(" description"):
+                if ent.strip().startswith("description"):
                     description = ent
                     
-                if ent.startswith(" ip address"):
+                if ent.strip().startswith("ip address"):
                     ip_add = ent
                     
-                if ent.startswith(" ip helper-address"):
+                if ent.strip().startswith("ip helper-address"):
                     helper_list.append(ent)
                     
-                if ent.startswith(" ip vrf for"):
+                if ent.strip().startswith("ip vrf for"):
                     vrf_member = ent
                     
             if state == "":
                 state = " no shutdown"
                 
             intf_entity = IntObj(intf, ip_add, description, vrf_member, helper_list, state)
-            self.obj_list_2.append(intf_entity)
+            obj_list.append(intf_entity)
 
-        return self.obj_list_2
+        return obj_list
 
 

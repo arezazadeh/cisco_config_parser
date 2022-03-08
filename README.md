@@ -1,5 +1,25 @@
-# ConfigParser
+# Cisco Configuration Parser
 ## This Package Will Parse Cisco IOS, IOS-XE and IOS-XR Configuration File.
+
+There are two ways to parse the config, 1, SSH which is not recommended, and 2, feeding the running-config file 
+* to use file, use `ConfigParser(file=your_file)`. 
+* to use SSH:
+```ruby
+ConfigParser(
+    ssh=True, 
+    user="username", 
+    password="password", 
+    device_type="cisco_ios", 
+    host="your_switch_ip"
+    )
+```
+device types that are accepted are:
+```ruby
+cisco_ios
+cisco_xe
+cisco_xr
+```
+pass the kwargs then it will login to your device and does the `show running-config` and will parse it. 
 
 ## Install the package 
 
@@ -40,7 +60,7 @@ from cisco_config_parser import ConfigParser
 
 file = "running-config.txt"
 
-parser = ConfigParser(file)
+parser = ConfigParser(file=file)
 
 obj = parser.get_routed_port()
 
@@ -81,7 +101,7 @@ from cisco_config_parser import ConfigParser
 
 file = "stnnwk-21-sa01_run_config.txt"
 
-parser = ConfigParser(file)
+parser = ConfigParser(file=file)
 
 obj = parser.get_switchport()
 
@@ -116,7 +136,7 @@ Voice  vlan 700
     
     
     my_file = "switch01_running_config.txt"
-    parse = ConfigParser(my_file)
+    parse = ConfigParser(file=my_file)
     
     
     obj_list = parse.find_parent_child("^router")
@@ -158,7 +178,7 @@ Voice  vlan 700
 
 
     my_file = "switch01_running_config.txt"
-    parse = ConfigParser(my_file)
+    parse = ConfigParser(file=my_file)
     obj_list = parse.find_parent_child("^interface")
 
     for i in obj_list:
@@ -186,7 +206,7 @@ from cisco_config_parser import ConfigParser
 
 
 file = "switch_01-run_config.txt"
-parser = ConfigParser(file)
+parser = ConfigParser(file=file)
 
 res = parser.get_svi_objects()
 
