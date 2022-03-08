@@ -100,7 +100,7 @@ interface TenGigE0/3/0/29.3340
 
 from cisco_config_parser import ConfigParser
 
-file = "stnnwk-21-sa01_run_config.txt"
+file = "switch01_run_config.txt"
 
 parser = ConfigParser(file=file)
 
