@@ -23,7 +23,8 @@ class SwitchPort:
         self.vlan = kwargs.get("vlan") or None
         self.voice = kwargs.get("voice") or None
         self.description = kwargs.get("description") or None
-        self.mode = kwargs.get("mode") or None
+        self.access = kwargs.get("access") or None
+        self.trunk = kwargs.get("trunk") or None
         self.state = kwargs.get("state") or None
 
     def __str__(self):

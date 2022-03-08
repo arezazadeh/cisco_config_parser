@@ -88,7 +88,8 @@ def parse_switch_port(port_list):
         vlan = ""
         voice = ""
         description = ""
-        mode = ""
+        trunk = ""
+        access = ""
         state = ""
         
         split_line = re.split("\n", line.strip())
@@ -103,16 +104,18 @@ def parse_switch_port(port_list):
 
             if "voice vlan" in i:
                 voice_vlan_id = i.split("voice")[1]
-                voice = f"Voice {voice_vlan_id}"
+                voice = f" Voice {voice_vlan_id}"
 
             if "switchport access vlan" in i:
                 vlan_id = i.split("access vlan")[1]
-                vlan = f"Vlan {vlan_id}"
+                vlan = f" Vlan {vlan_id}"
 
-            if "switchport access" in i:
-                mode = "Access Port"
-            if "switchport trunk" in i:
-                mode = "Trunk Port"
+            if "switchport mode access" in i:
+                access = " Access Port"
+                
+            if "switchport mode trunk" in i:
+                trunk = " Trunk Port"
+                
         if state == "":
             state = " no shutdown"
 
@@ -120,7 +123,8 @@ def parse_switch_port(port_list):
                                     vlan=vlan,
                                     description=description,
                                     voice=voice,
-                                    mode=mode,
+                                    access=access,
+                                    trunk=trunk
                                     state=state
                                     )
 
