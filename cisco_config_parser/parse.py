@@ -124,7 +124,7 @@ def parse_switch_port(port_list):
                                     description=description,
                                     voice=voice,
                                     access=access,
-                                    trunk=trunk
+                                    trunk=trunk,
                                     state=state
                                     )
 
