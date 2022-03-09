@@ -148,14 +148,15 @@ def get_svi(content):
                 interface_obj.ip_add = ent
                 
             if ent.strip().startswith("ip helper-address"):
-                interface_obj.helper_list.append(ent)
+                helper_list.append(ent)
                 
             if ent.strip().startswith("ip vrf for"):
                 interface_obj.vrf_member = ent
                 
         if interface_obj.state is None:
             interface_obj.state = " no shutdown"
-            
+        
+        interface_obj.helper = helper_list
         obj_list.append(interface_obj)
 
     return obj_list
