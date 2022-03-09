@@ -19,3 +19,14 @@ class SSHError(Exception):
 
     def __str__(self):
         return f"{self.host} -> {self.message}"
+    
+
+
+class SwitchPortModeError(Exception):
+
+    def __init__(self, message="kwargs missing, please enter get_switchport(mode='access') or get_switchport(mode='trunk')"):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return self.message

@@ -81,6 +81,9 @@ class ConfigParser:
     def get_switchport(self, **kwargs):
         
         mode = kwargs.get("mode")
+        if not mode:
+            raise SwitchPortModeError()
+
         
         if self.ssh:
             content = self.ssh_to.ssh("show running-config")
