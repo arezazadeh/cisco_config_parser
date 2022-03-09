@@ -58,7 +58,7 @@ class ConfigParser:
             if not self.file.endswith(".txt"):
                 raise FileReadError(self.file)
 
-    def read_file(self):
+    def _read_file(self):
         with open(self.file, "r") as f:
             content = f.read()
             return content
@@ -78,19 +78,23 @@ class ConfigParser:
             obj_list = split_content(content, regex)
             return obj_list
 
-    def get_switchport(self):
+    def get_switchport(self, **kwargs):
+        
+        mode = kwargs.get("mode")
+        
         if self.ssh:
             content = self.ssh_to.ssh("show running-config")
             port_list = get_interface(content)
             if len(port_list) > 0:
-                obj_list = parse_switch_port(port_list)
+                obj_list = parse_switch_port(port_list, mode)
                 return obj_list
+        
         else:
             content = self.read_file()
             port_list = get_interface(content)
 
             if len(port_list) > 0:
-                obj_list = parse_switch_port(port_list)
+                obj_list = parse_switch_port(port_list, mode)
                 return obj_list
 
     def get_routed_port(self):

@@ -17,18 +17,49 @@ class IntObj:
         return f"IntObj Class - {self.intf}"
 
 
-class SwitchPort:
+
+class SwitchPortAccess:
     def __init__(self, port, **kwargs):
         self.port = port
         self.vlan = kwargs.get("vlan") or None
         self.voice = kwargs.get("voice") or None
         self.description = kwargs.get("description") or None
-        self.access = kwargs.get("access") or None
-        self.trunk = kwargs.get("trunk") or None
         self.state = kwargs.get("state") or None
 
     def __str__(self):
-        return f"SwitchPort Class - {self.port}"
+        return f"SwitchPortAccess Class - {self.port}"
+
+    @property
+    def get_access(self):
+        return f"""
+{self.port}
+  {self.description}
+  {self.vlan}
+  {self.voice}
+  {self.state}
+!
+"""
+
+
+class SwitchPortTrunk:
+    def __init__(self, port, **kwargs):
+        self.port = port
+        self.description = kwargs.get("description") or None
+        self.allowed_vlan = kwargs.get("allowed_vlan") or None
+        self.state = kwargs.get("state")
+
+    def __str__(self):
+        return f"SwitchPortTrunk Class - {self.port}"
+
+    @property
+    def get_trunk(self):
+        return f"""
+{self.port}
+  {self.description}
+  {self.allowed_vlan}
+  {self.state}
+!
+"""
 
 
 class RoutedPort:

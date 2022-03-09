@@ -95,6 +95,7 @@ interface TenGigE0/3/0/29.3340
 ```
 
 * Getting Switchport:
+there are two different mode on switchport, `access` and `trunk`. you should specify the mode `mode=trunk` or `mode=access`. this way you will be able to access all the access-ports or trunk-ports by accessing the methods (get_access or get_trunk)
 
 ```ruby
 
@@ -104,16 +105,19 @@ file = "switch01_run_config.txt"
 
 parser = ConfigParser(file=file)
 
-obj = parser.get_switchport()
+obj = parser.get_switchport(mode="access")
 
 for i in obj:
     print(i.port)
-    print(i.mode)
     print(i.vlan)
     print(i.voice)
     print(i.description)
     print("!")
+
+for i in obj:
+    print(i.get_access)
 ```
+
 output:
 
 ```

@@ -74,63 +74,31 @@ def parse_routed_port(port_list):
     return obj_list
 
 
-def parse_switch_port(port_list):
-    obj_list = []
+def parse_switch_port(port_list, mode):
+    trunk_port_list = []
+    access_port_list = []
     switchport_interface_list = []
+
     for i in port_list:
         interface_parent = re.split("\n", i)
         for line in interface_parent:
-            if "switchport" in line:
+            if "switchport mode" in line:
                 switchport_interface_list.append(i)
 
     for line in switchport_interface_list:
-        port = ""
-        vlan = ""
-        voice = ""
-        description = ""
-        trunk = ""
-        access = ""
-        state = ""
-        
-        split_line = re.split("\n", line.strip())
-        port = split_line[0]
-        
-        for i in split_line:
-            if i.strip().startswith("shutdown"):
-                state = i
-                
-            if "description" in i:
-                description = i
+        if "switchport mode trunk" in line:
+            trunk_port_list.append(line)
 
-            if "voice vlan" in i:
-                voice_vlan_id = i.split("voice")[1]
-                voice = f" Voice {voice_vlan_id}"
+        if "switchport mode access" in line:
+            access_port_list.append(line)
 
-            if "switchport access vlan" in i:
-                vlan_id = i.split("access vlan")[1]
-                vlan = f" Vlan {vlan_id}"
+    if mode == "access":
+        access_obj_list = is_access_port(access_port_list)
+        return access_obj_list
 
-            if "switchport mode access" in i:
-                access = " Access Port"
-                
-            if "switchport mode trunk" in i:
-                trunk = " Trunk Port"
-                
-        if state == "":
-            state = " no shutdown"
-
-        switchport_obj = SwitchPort(port,
-                                    vlan=vlan,
-                                    description=description,
-                                    voice=voice,
-                                    access=access,
-                                    trunk=trunk,
-                                    state=state
-                                    )
-
-        obj_list.append(switchport_obj)
-
-    return obj_list
+    if mode == "trunk":
+        trunk_obj_list = is_trunk_port(trunk_port_list)
+        return trunk_obj_list
 
 
 def split_content(content, regex):
@@ -207,3 +175,76 @@ def get_svi(content):
         obj_list.append(intf_entity)
 
     return obj_list
+
+
+
+def is_trunk_port(port_list):
+    obj_list = []
+    for line in port_list:
+        description = ""
+        allowed_vlan = ""
+        state = ""
+        split_line = re.split("\n", line.strip())
+        port = split_line[0]
+        for i in split_line:
+            if "description" in i:
+                description = i
+
+            if "switchport trunk allowed" in i:
+                allowed_vlan = i
+
+            if i.strip().startswith("shutdown"):
+                state = "shutdown"
+        if state == "":
+            state = " no shutdown"
+
+        obj_list.append(
+            SwitchPortTrunk(
+                port=port,
+                description=description,
+                allowed_vlan=allowed_vlan,
+                state=state
+            )
+        )
+    return obj_list
+
+
+def is_access_port(port_list):
+    obj_list = []
+    for line in port_list:
+        vlan = ""
+        voice = ""
+        description = ""
+        state = ""
+        split_line = re.split("\n", line.strip())
+        port = split_line[0]
+        for i in split_line:
+
+            if "description" in i:
+                description = i.split("description")[1].strip()
+
+            if "voice vlan" in i:
+                voice_vlan_id = i.split("voice")[1]
+                voice = f"Voice {voice_vlan_id}"
+
+            if "switchport access vlan" in i:
+                vlan_id = i.split("access vlan")[1]
+                vlan = f"Vlan {vlan_id}"
+
+            if i.strip().startswith("shutdown"):
+                state = "shutdown"
+
+        if state == "":
+            state = "no shutdown"
+
+        obj_list.append(
+            SwitchPortAccess(
+                port=port,
+                vlan=vlan,
+                voice=voice,
+                description=description,
+                state=state
+            )
+        )
+    return obj_list
+
