@@ -11,66 +11,55 @@ def parse_routed_port(port_list):
         for line in interface_parent:
             if "ip address" in line or "ipv4 address" in line:
                 routed_port_list.append(i)
+                
     for line in routed_port_list:
-        intf = ""
-        description = ""
-        ip_add = ""
-        mask = ""
-        subnet = ""
-        vrf_member = ""
-        state = ""
+        routed_port_obj = RoutedPort()
+
         helper_list = []
         split_line = re.split("\n", line.strip())
         
         for ent in split_line:
             if ent.strip().startswith("shutdown"):
-                state = ent
+                routed_port_obj.state = ent
                 
-            if ent.strip().startswith("interface "):
-                intf = ent
+            if ent.strip().startswith("interface"):
+                routed_port_obj.intf = ent
                 
             if ent.strip().startswith("description"):
-                description = ent
+                routed_port_obj.description = ent
                 
             if ent.strip().startswith("ip address"):
                 address = ent.split("ip address")[1]
                 addr_mask = address.split()
-                ip_add = addr_mask[0]
-                mask = addr_mask[1]
-                subnet = ipaddress.ip_network(f"{ip_add}/{mask}", strict=False)
+                routed_port_obj.ip_add = addr_mask[0]
+                routed_port_obj.mask = addr_mask[1]
+                routed_port_obj.subnet = ipaddress.ip_network(f"{routed_port_obj.ip_add}/{routed_port_obj.mask}", strict=False)
                 
             if ent.strip().startswith("ipv4 address"):
                 address = ent.split("ipv4 address")[1]
                 addr_mask = address.split()
-                ip_add = addr_mask[0]
-                mask = addr_mask[1]
-                subnet = ipaddress.ip_network(f"{ip_add}/{mask}", strict=False)
+                routed_port_obj.ip_add = addr_mask[0]
+                routed_port_obj.mask = addr_mask[1]
+                routed_port_obj.subnet = ipaddress.ip_network(f"{routed_port_obj.ip_add}/{routed_port_obj.mask}", strict=False)
                 
             if ent.strip().startswith("ip helper-address"):
                 helper_list.append(ent)
                 
             if ent.strip().startswith("ip vrf for"):
-                vrf_member = ent
+                routed_port_obj.vrf_member = ent
                 
             if ent.strip().startswith("vrf"):
-                vrf_member = ent
+                routed_port_obj.vrf_member = ent
                 
             if ent.strip().startswith("vrf member"):
-                vrf_member = ent
+                routed_port_obj.vrf_member = ent
                 
-        if state == "":
-            state = " no shutdown"
+        if routed_port_obj.state is None:
+            routed_port_obj.state = "no shutdown"
             
-        obj_list.append(RoutedPort(intf,
-                                   ip_add=ip_add,
-                                   mask=mask,
-                                   subnet=subnet,
-                                   description=description,
-                                   vrf=vrf_member,
-                                   helper_list=helper_list,
-                                   state=state
-                                   )
-                        )
+        routed_port_obj.helper = helper_list
+        
+        obj_list.append(routed_port_obj)
     return obj_list
 
 
@@ -140,39 +129,34 @@ def get_svi(content):
             intf_vlan_list.append(obj)
 
     for i in intf_vlan_list:
-        intf = ""
-        description = ""
-        ip_add = ""
-        vrf_member = ""
-        state = ""
+        interface_obj = IntObj()
         helper_list = []
         
         line = re.split("\n", i.strip())
         
         for ent in line:
             if ent.strip().startswith("shutdown"):
-                state = ent
+                interface_obj.state = ent
                 
             if ent.strip().startswith("interface Vlan"):
-                intf = ent
+                interface_obj.intf = ent
                 
             if ent.strip().startswith("description"):
-                description = ent
+                interface_obj.description = ent
                 
             if ent.strip().startswith("ip address"):
-                ip_add = ent
+                interface_obj.ip_add = ent
                 
             if ent.strip().startswith("ip helper-address"):
-                helper_list.append(ent)
+                interface_obj.helper_list.append(ent)
                 
             if ent.strip().startswith("ip vrf for"):
-                vrf_member = ent
+                interface_obj.vrf_member = ent
                 
-        if state == "":
-            state = " no shutdown"
+        if interface_obj.state is None:
+            interface_obj.state = " no shutdown"
             
-        intf_entity = IntObj(intf, ip_add, description, vrf_member, helper_list, state)
-        obj_list.append(intf_entity)
+        obj_list.append(interface_obj)
 
     return obj_list
 
@@ -181,70 +165,54 @@ def get_svi(content):
 def is_trunk_port(port_list):
     obj_list = []
     for line in port_list:
-        description = ""
-        allowed_vlan = ""
-        state = ""
+        trunk_obj = SwitchPortTrunk()
+
         split_line = re.split("\n", line.strip())
-        port = split_line[0]
+        trunk_obj.port = split_line[0]
+        
         for i in split_line:
             if "description" in i:
-                description = i
+                trunk_obj.description = i
 
             if "switchport trunk allowed" in i:
-                allowed_vlan = i
+                trunk_obj.allowed_vlan = i
 
             if i.strip().startswith("shutdown"):
-                state = "shutdown"
-        if state == "":
-            state = " no shutdown"
+                trunk_obj.state = "shutdown"
+                
+        if trunk_obj.state is None:
+            trunk_obj.state = " no shutdown"
 
-        obj_list.append(
-            SwitchPortTrunk(
-                port=port,
-                description=description,
-                allowed_vlan=allowed_vlan,
-                state=state
-            )
-        )
+        obj_list.append(trunk_obj)
     return obj_list
 
 
 def is_access_port(port_list):
     obj_list = []
     for line in port_list:
-        vlan = ""
-        voice = ""
-        description = ""
-        state = ""
+        access_obj = SwitchPortAccess()
+        
         split_line = re.split("\n", line.strip())
-        port = split_line[0]
+        access_obj.port = split_line[0]
         for i in split_line:
 
             if "description" in i:
-                description = i.split("description")[1].strip()
+                access_obj.description = i.split("description")[1].strip()
 
             if "voice vlan" in i:
                 voice_vlan_id = i.split("voice")[1]
-                voice = f"Voice {voice_vlan_id}"
+                access_obj.voice = f"Voice {voice_vlan_id}"
 
             if "switchport access vlan" in i:
                 vlan_id = i.split("access vlan")[1]
-                vlan = f"Vlan {vlan_id}"
+                access_obj.vlan = f"Vlan {vlan_id}"
 
             if i.strip().startswith("shutdown"):
-                state = "shutdown"
+                access_obj.state = "shutdown"
 
-        if state == "":
-            state = "no shutdown"
+        if access_obj.state is None:
+            access_obj.state = "no shutdown"
 
-        obj_list.append(
-            SwitchPortAccess(
-                port=port,
-                vlan=vlan,
-                voice=voice,
-                description=description,
-                state=state
-            )
-        )
+        obj_list.append(access_obj)
     return obj_list
 
