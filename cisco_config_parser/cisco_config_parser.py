@@ -74,7 +74,7 @@ class ConfigParser:
             obj_list = split_content(content, regex)
             return obj_list
         else:
-            content = self.read_file()
+            content = self._read_file()
             obj_list = split_content(content, regex)
             return obj_list
 
@@ -90,7 +90,7 @@ class ConfigParser:
                 return obj_list
         
         else:
-            content = self.read_file()
+            content = self._read_file()
             port_list = get_interface(content)
 
             if len(port_list) > 0:
@@ -105,7 +105,7 @@ class ConfigParser:
                 obj_list = parse_routed_port(port_list)
                 return obj_list
         else:
-            content = self.read_file()
+            content = self._read_file()
             port_list = get_interface(content)
 
             if len(port_list) > 0:
@@ -119,7 +119,7 @@ class ConfigParser:
             if len(obj_list) > 0:
                 return obj_list
         else:
-            content = self.read_file()
+            content = self._read_file()
             obj_list = get_svi(content)
             if len(obj_list) > 0:
                 return obj_list
