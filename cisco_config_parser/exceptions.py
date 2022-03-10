@@ -30,3 +30,12 @@ class SwitchPortModeError(Exception):
 
     def __str__(self):
         return self.message
+
+
+class ContentMissingError(Exception):
+    def __init__(self, message="content kwargs is missing, please enter content=<your_file>/<ssh_output>"):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return self.message

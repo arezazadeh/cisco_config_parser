@@ -58,15 +58,17 @@ class ConfigParser:
                     self.ssh_to = MySSH(self.host, self.user, self.password, self.device_type)
                 except Exception:
                     raise SSHError(self.host)
+                
         elif self.method == "file":
-            if self.content:
+            if self.content is None:
+                raise ContentMissingError()
+            else:
                 if not self.content.endswith(".txt"):
                     raise FileReadError(self.content)
 
         elif self.method == "ext_ssh":
             if self.content is None:
-                print("Please add the input=<ssh_output>")
-                return
+                raise ContentMissingError()
 
     def _read_file(self):
         with open(self.content, "r") as f:
