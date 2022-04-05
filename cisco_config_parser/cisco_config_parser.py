@@ -36,6 +36,7 @@ class ConfigParser:
         content:options: output of ssh (ext_ssh) or Text File with .txt extension. this is only needed if you choose
                 "ext_ssh" or "file" as method
         ssh:bool => default False
+        platform:str => "nxos" default "ios"
         host:str => default None
         user:str => default None
         password:str => default None
@@ -48,6 +49,7 @@ class ConfigParser:
         self.user = kwargs.get("user") or None
         self.password = kwargs.get("password") or None
         self.device_type = kwargs.get("device_type") or "cisco_ios"
+        self.platform = kwargs.get("platform") or "ios"
         
         # if self.method is None:
         #     Exception
@@ -75,24 +77,39 @@ class ConfigParser:
             content = f.read()
             return content
 
-    def find_parent_child(self, regex):
+    def find_parent_child(self, **kwargs):
         """
         :param regex: parsing the file based on the input regex
         :return: List (obj_list)
         """
+        regex = kwargs.get("regex")
         if self.method == "int_ssh":
-            if self.ssh:
-                content = self.ssh_to.ssh("show running-config")
-                self.ssh_to.ssh_conn.disconnect()
-                obj_list = split_content(content, regex)
-                return obj_list
+            if self.platform == "nxos":
+                if self.ssh:
+                    content = self.ssh_to.ssh("show running-config")
+                    self.ssh_to.ssh_conn.disconnect()
+                    obj = GetParent(content)
+                    return obj
+            else:
+                if self.ssh:
+                    content = self.ssh_to.ssh("show running-config")
+                    self.ssh_to.ssh_conn.disconnect()
+                    obj_list = split_content(content, regex)
+                    return obj_list
 
         elif self.method == "file":
+            if self.platform == "nxos":
+                content = self._read_file()
+                obj = GetParent(content)
+                return obj
             content = self._read_file()
             obj_list = split_content(content, regex)
             return obj_list
 
         elif self.method == "ext_ssh":
+            if self.platform == "nxos":
+                obj = GetParent(self.content)
+                return obj
             obj_list = split_content(self.content, regex)
             return obj_list
 
@@ -115,6 +132,9 @@ class ConfigParser:
                     return obj_list
 
         elif self.method == "file":
+            if self.platform == "nxos":
+                content = self._read_file()
+                obj_list = GetParent(content)
             content = self._read_file()
             port_list = get_interface(content)
             if len(port_list) > 0:

@@ -3,14 +3,14 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '1.2.11'
+VERSION = '1.2.13'
 PACKAGE_NAME = 'cisco_config_parser'
 AUTHOR = 'Ahmad Rezazadeh'
 AUTHOR_EMAIL = 'ahmad1785@gmail.com'
 URL = 'https://github.com/arezazadeh/cisco_config_parser'
 
 LICENSE = 'MIT License'
-DESCRIPTION = 'This Package Will Parse Cisco IOS, IOS-XE and IOS-XR Configuration File.'
+DESCRIPTION = 'This Package Will Parse Cisco IOS, IOS-XE, IOS-XR and NXOS Configuration File.'
 LONG_DESCRIPTION = (HERE / "README.md").read_text()
 LONG_DESC_TYPE = "text/markdown"
 

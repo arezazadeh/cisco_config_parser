@@ -1,5 +1,5 @@
 # Cisco Configuration Parser
-## This Package Will Parse Cisco IOS, IOS-XE and IOS-XR Configuration File.
+## This Package Will Parse Cisco IOS, IOS-XE, IOS-XR, and NXOS Configuration File.
 
 There are two ways to parse the config, 1, SSH which is not recommended, and 2, feeding the running-config file 
 * to use file, use `ConfigParser(method="file", content=<your_file>)`. 
@@ -19,6 +19,7 @@ device types that are accepted are:
 cisco_ios
 cisco_xe
 cisco_xr
+cisco_nxos
 ```
 pass the kwargs then it will login to your device and does the `show running-config` and will parse it. 
 
