@@ -254,7 +254,6 @@ class _VLANInfo:
         vlan_related_info = ""
         nve_config = ""
         evpn_config = ""
-        nve_vlan_config = ""
         evpn_regex = re.compile("vni [0-9]{7} l2")
         for i in split_on_bang:
 
@@ -477,7 +476,8 @@ class GetParent:
 
     def _get_router_segment(self):
         parser = Parser(self._result)
-        split_on_bang = re.split("!", parser, flags=re.MULTILINE)
+        content = parser._add_bang_between_section()
+        split_on_bang = re.split("!", content, flags=re.MULTILINE)
         bgp_string = ""
         for i in split_on_bang:
             if "router bgp" in i.strip():
