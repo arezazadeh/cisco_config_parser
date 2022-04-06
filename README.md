@@ -36,19 +36,19 @@ pip install cisco-config-parser
 
 * to find lines in the configuration starting with "router"
 ```ruby
-parse.find_parent_child("^router")
+parse.find_parent_child(regex="^router")
 ```
 
 
 * to parse all confuguration into parent and child format
 ```ruby
-parse.find_parent_child("^.")
+parse.find_parent_child(regex="^.")
 ```
 
 
 * to find lines in the configuration that has "Loopback" in them
 ```ruby
-parse.find_parent_child("^.*Loopback")
+parse.find_parent_child(regex="^.*Loopback")
 
 ```
 
@@ -146,7 +146,7 @@ Voice  vlan 700
     parse = ConfigParser(method="file", content=my_file)
     
     
-    obj_list = parse.find_parent_child("^router")
+    obj_list = parse.find_parent_child(regex="^router")
     for i in obj_list:
         print(i.parent)
         for child_obj in i.child:
@@ -186,7 +186,7 @@ Voice  vlan 700
 
     my_file = "switch01_running_config.txt"
     parse = ConfigParser(method="file", content=my_file)
-    obj_list = parse.find_parent_child("^interface")
+    obj_list = parse.find_parent_child(regex="^interface")
 
     for i in obj_list:
         vlan_200 = re.search("Vlan200", i.parent)
