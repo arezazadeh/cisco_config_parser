@@ -1,13 +1,14 @@
 import re
 import ipaddress
 from .obj import *
+from .regex import *
 
 
 def parse_routed_port(port_list):
     routed_port_list = []
     obj_list = []
     for i in port_list:
-        interface_parent = re.split("\n", i)
+        interface_parent = SPLIT_ON_LINE.split(i)
         for line in interface_parent:
             if "ip address" in line or "ipv4 address" in line:
                 routed_port_list.append(i)
@@ -16,7 +17,7 @@ def parse_routed_port(port_list):
         routed_port_obj = RoutedPort()
 
         helper_list = []
-        split_line = re.split("\n", line.strip())
+        split_line = SPLIT_ON_LINE.split(line.strip())
         
         for ent in split_line:
             if ent.strip().startswith("shutdown"):
@@ -69,7 +70,7 @@ def parse_switch_port(port_list, mode):
     switchport_interface_list = []
 
     for i in port_list:
-        interface_parent = re.split("\n", i)
+        interface_parent = SPLIT_ON_LINE.split(i)
         for line in interface_parent:
             if "switchport mode" in line:
                 switchport_interface_list.append(i)
@@ -90,17 +91,17 @@ def parse_switch_port(port_list, mode):
         return trunk_obj_list
 
 
-def split_content(content, regex):
+def get_parent_child(content, regex):
     obj_list = []
-    split_on_bang = re.split("^!$", content, flags=re.MULTILINE)
+    split_on_bang = SPLIT_ON_FIRST_BANG_MULTILINE.split(content)
     for i in split_on_bang:
         regex_result = re.match(regex, i.strip())
         if regex_result:
             if i.strip().startswith(regex_result.group()):
-                regex_parent_child = re.split("\n", i.strip())
-                parent = regex_parent_child[0]
-                regex_parent_child.pop(0)
-                child = regex_parent_child
+                child_regex = SPLIT_ON_LINE.split(i.strip())
+                parent = child_regex[0]
+                child_regex.pop(0)
+                child = child_regex
                 obj_list.append(ParentObj(parent, child))
     return obj_list
 
@@ -111,9 +112,9 @@ def get_interface(content):
     """
     port_list = []
 
-    split_on_bang = re.split("^!$", content, flags=re.MULTILINE)
+    split_on_bang = SPLIT_ON_FIRST_BANG_MULTILINE.split(content)
     for obj in split_on_bang:
-        parent_obj = re.findall("^interface\s+(.*)", obj, flags=re.MULTILINE)
+        parent_obj = INTERFACE_MULTILINE_REGEX.findall(obj)
         if parent_obj:
             port_list.append(obj)
     return port_list
@@ -122,9 +123,9 @@ def get_interface(content):
 def get_svi(content):
     obj_list = []
     intf_vlan_list = []
-    split_on_bang = re.split("^!$", content, flags=re.MULTILINE)
+    split_on_bang = SPLIT_ON_FIRST_BANG_MULTILINE.split(content)
     for obj in split_on_bang:
-        parent_obj = re.findall("^interface Vlan(.*)", obj, flags=re.MULTILINE)
+        parent_obj = VLAN_SVI_INTERFACE_MULTILINE_REGEX.findall(obj)
         if parent_obj:
             intf_vlan_list.append(obj)
 
@@ -132,7 +133,7 @@ def get_svi(content):
         interface_obj = IntObj()
         helper_list = []
         
-        line = re.split("\n", i.strip())
+        line = SPLIT_ON_LINE.split(i.strip())
         
         for ent in line:
             if ent.strip().startswith("shutdown"):
@@ -168,7 +169,7 @@ def is_trunk_port(port_list):
     for line in port_list:
         trunk_obj = SwitchPortTrunk()
 
-        split_line = re.split("\n", line.strip())
+        split_line = SPLIT_ON_LINE.split(line.strip())
         trunk_obj.port = split_line[0]
         
         for i in split_line:
@@ -193,7 +194,7 @@ def is_access_port(port_list):
     for line in port_list:
         access_obj = SwitchPortAccess()
         
-        split_line = re.split("\n", line.strip())
+        split_line = SPLIT_ON_LINE.split(line.strip())
         access_obj.port = split_line[0]
         for i in split_line:
 
@@ -250,30 +251,29 @@ class _VLANInfo:
         if self._vlan == "all":
             return "Please specify VLAN ID"
 
-        split_on_bang = re.split("!", self._config, flags=re.MULTILINE)
+        split_on_bang = SPLIT_ON_BANG_MULTILINE.split(self._config)
         vlan_related_info = ""
         nve_config = ""
         evpn_config = ""
-        evpn_regex = re.compile("vni [0-9]{7} l2")
         for i in split_on_bang:
 
             if "nve" in i:
-                split_line = re.split("\n", i, flags=re.MULTILINE)
+                split_line = SPLIT_ON_LINE_MULTILINE.split(i)
                 for line in split_line:
-                    parent = re.search("^\s{2}member vni [0-9]{7}$", line)
-                    children = re.search("\s{3}.*", line)
+                    parent = NVE_MEMBER_VNI_PARENT_REGEX.search(line)
+                    children = NVE_MEMBER_VNI_CHILDREN_REGEX.search(line)
                     if parent:
                         nve_config += "!\n"
                         nve_config += f"{parent.group()}\n"
                     if children:
                         nve_config += f"{children.group()}\n"
 
-            evpn_search = evpn_regex.search(i.strip())
+            evpn_search = BGP_EVPN_REGEX.search(i.strip())
             if evpn_search:
-                split_evpn_lines = re.split("\n", i, flags=re.MULTILINE)
+                split_evpn_lines = SPLIT_ON_LINE_MULTILINE.split(i)
                 for evpn_line in split_evpn_lines:
-                    vni_parent = re.search("\s{2}vni [0-9]{7} l2", evpn_line)
-                    vni_children = re.search("\s{4}.*", evpn_line)
+                    vni_parent = BGP_EVPN_PARENT_REGEX.search(evpn_line)
+                    vni_children = CHILDREN_WITH_4_SPACE_REGEX.search(evpn_line)
                     if vni_parent:
                         evpn_config += "!\n"
                         evpn_config += f"{vni_parent.group()}\n"
@@ -284,14 +284,14 @@ class _VLANInfo:
                 vlan_related_info += "!\n"
                 vlan_related_info += f"{i}\n"
 
-        split_nve_on_bang = re.split("!", nve_config, flags=re.MULTILINE)
+        split_nve_on_bang = SPLIT_ON_BANG_MULTILINE.split(nve_config)
         for i in split_nve_on_bang:
             if self._vlan.strip() in i.strip():
                 vlan_related_info += "!\n"
                 vlan_related_info += "int nve1"
                 vlan_related_info += f"{i}\n"
 
-        split_evpn_on_bang = re.split("!", evpn_config, flags=re.MULTILINE)
+        split_evpn_on_bang = SPLIT_ON_BANG_MULTILINE.split(evpn_config)
         for i in split_evpn_on_bang:
             if self._vlan.strip() in i.strip():
                 vlan_related_info += "!\n"
@@ -303,6 +303,9 @@ class _VLANInfo:
 
     @vlan.setter
     def vlan(self, vlan):
+        if self._vlan == "":
+            self._vlan = "all"
+
         self._vlan = vlan
 
 
@@ -326,11 +329,11 @@ class _NeighborInfo:
     def _stringify_neighbor(self):
         neighbor_stringify = ""
 
-        split_neighbor = re.split("\n", self._neighbor_segment.strip(), flags=re.MULTILINE)
+        split_neighbor = SPLIT_ON_LINE_MULTILINE.split(self._neighbor_segment.strip())
         for i in split_neighbor:
 
-            neighbor_ip = re.search("^(\s{4}neighbor\s\d+.\d+.\d+.\d+)", i)
-            neighbor_section = re.search("^\s{5}.*", i)
+            neighbor_ip = BGP_NEIGHBOR_REGEX.search(i)
+            neighbor_section = CHILDREN_WITH_5_SPACE_REGEX.search(i)
 
             if neighbor_ip:
                 neighbor_stringify += f"!\n"
@@ -347,14 +350,14 @@ class _NeighborInfo:
         if self._neighbor == "all":
             return neighbor_string
 
-        split_on_bang = re.split("!", neighbor_string, flags=re.MULTILINE)
+        split_on_bang = SPLIT_ON_BANG_MULTILINE.split(neighbor_string)
         for i in split_on_bang:
             if self._neighbor.strip() in i.strip():
                 return i
 
 
 
-class _RoutingProtocol:
+class RoutingProtocol:
     def __init__(self, **kwargs):
         self._vrf_segment = kwargs.get("_vrf_segment")
         self._vrf = "vrf"
@@ -368,19 +371,19 @@ class _RoutingProtocol:
         getter: gets neighbors for the given VRF
         :return:
         """
-        split_on_bang = re.split("!", self._vrf_segment, flags=re.MULTILINE)
+        split_on_bang = SPLIT_ON_BANG_MULTILINE.split(self._vrf_segment)
         vrf = self._vrf
         vrf_list = []
         for i in split_on_bang:
 
             if "vrf " in i.strip():
                 if vrf == "vrf":
-                    vrf_regex = re.search("^vrf\s(.*)", i.strip())
+                    vrf_regex = ROUTER_BGP_VRF_CONFIG_REGEX.search(i.strip())
                     if vrf_regex:
                         vrf_list.append(vrf_regex.group())
 
                 else:
-                    vrf_regex = re.search(f"^(vrf {vrf.upper()}.*)", i.strip())
+                    vrf_regex = find_vrf_section(vrf, i.strip())
                     if vrf_regex:
                         neighbor_info = _NeighborInfo(_neighbor_segment=i)
                         neighbor_info.neighbor = self.neighbor
@@ -402,13 +405,13 @@ class _RoutingProtocol:
         self._vrf = vrf
 
 
-class GetParent:
+class NXOSGetParent:
     """
     --------------------------------------------------------------------------
         file = "STNMED2-MTR-BL01_running.txt"
 
-        parser = ConfigParser(content=file, method="file", platform="nxos")
-        obj = parser.find_parent_child()
+        NXOSConfigSeparator = ConfigNXOSConfigSeparator(content=file, method="file", platform="nxos")
+        obj = NXOSConfigSeparator.find_parent_child()
 
         vlan_info = obj.get_vlan_info()
         vlan_info.vlan = "2626"
@@ -418,26 +421,27 @@ class GetParent:
 
     """
     def __init__(self, content):
-        self._result = content
+        self._content = content
 
 
-    def get_vlan_info(self):
-        parser = Parser(self._result)
-        sectioned_config = parser._add_bang_between_section()
+    def _get_vlan_info(self):
+
+        nxos_config_separator = NXOSConfigSeparator(self._content)
+        sectioned_config = nxos_config_separator._add_bang_between_section()
         vlan_obj = _VLANInfo(_config=sectioned_config)
         return vlan_obj
 
-    def get_vlan(self):
-        parser = Parser(self._result)
-        sectioned_config = parser._add_bang_between_section()
-        split_line = re.split("!", sectioned_config, flags=re.MULTILINE)
+    def _get_vlan(self):
+        nxos_config_separator = NXOSConfigSeparator(self._content)
+        sectioned_config = nxos_config_separator._add_bang_between_section()
+        split_line = SPLIT_ON_BANG_MULTILINE.split(sectioned_config)
         vlan_list = []
         for i in split_line:
             vlan_info_obj = _VLAN()
-            vlan_reg = re.search("^(vlan\s[0-9]+)", i.strip())
-            no_vlan = re.search("^vlan\s[0-9]+,.*", i.strip())
-            if not no_vlan and vlan_reg:
-                vlan_segment = re.split("\n", i.strip())
+            vlan_regex = VLAN_CONFIG_REGEX.search(i.strip())
+            no_vlan = EXCLUDED_VLAN_CONFIG_REGEX.search(i.strip())
+            if not no_vlan and vlan_regex:
+                vlan_segment = SPLIT_ON_LINE.split(i.strip())
                 vlan_info_obj.vlan = vlan_segment[0]
                 for seg in vlan_segment:
                     if "name" in seg:
@@ -448,17 +452,18 @@ class GetParent:
                 vlan_list.append(vlan_info_obj)
         return vlan_list
 
-    def get_l3_int(self):
-        parser = Parser(self._result)
-        sectioned_config = parser._add_bang_between_section()
-        split_line = re.split("!", sectioned_config, flags=re.MULTILINE)
+    def _get_l3_int(self):
+        nxos_config_separator = NXOSConfigSeparator(self._content)
+        sectioned_config = nxos_config_separator._add_bang_between_section()
+        split_line = SPLIT_ON_BANG_MULTILINE.split(sectioned_config)
         intf_obj_list = []
         for i in split_line:
             if i.strip().startswith("interface"):
                 if "ip address" in i.strip():
                     intf_parent_child = _L3IntfParentChildren()
-                    intf = re.split("\n", i.strip())
+                    intf = SPLIT_ON_LINE.split(i.strip())
                     intf_parent_child.intf = intf[0]
+
                     for item in intf:
                         if "vrf member" in item.strip():
 
@@ -474,52 +479,49 @@ class GetParent:
         return intf_obj_list
 
 
+    def _get_routing_protocol(self):
+        nxos_parser = NXOSConfigSeparator(content=self._content)
+        routing_segment = nxos_parser._get_router_segment()
+        routing_protocol = RoutingProtocol(_vrf_segment=routing_segment)
+        return routing_protocol
+
+
+class NXOSConfigSeparator:
+    def __init__(self, content):
+        self.content = content
+        self.sectioned_content = ""
+    
+    def _add_bang_between_section(self):
+        splited_on_line = SPLIT_ON_LINE.split(self.content)
+        for i in splited_on_line:
+            parent_regex = PARENT_LINE_REGEX.search(i)
+            children_regex = CHILDREN_LINE_REGEX.search(i)
+            if parent_regex:
+                self.sectioned_content += "!\n"
+                self.sectioned_content += f"{parent_regex.group()}\n"
+            if children_regex:
+                self.sectioned_content += f"{children_regex.group()}\n"
+        return self.sectioned_content
+
+
     def _get_router_segment(self):
-        parser = Parser(self._result)
-        content = parser._add_bang_between_section()
-        split_on_bang = re.split("!", content, flags=re.MULTILINE)
+        sectioned_config = self._add_bang_between_section()
+        split_on_bang = SPLIT_ON_BANG_MULTILINE.split(sectioned_config)
         bgp_string = ""
         for i in split_on_bang:
             if "router bgp" in i.strip():
-                bgp_segment = re.split("\n", i)
+                bgp_segment = SPLIT_ON_LINE.split(i)
                 for seg in bgp_segment:
-                    bgp_process = re.search("^router bgp(.*)", seg)
+                    bgp_vrf = ROUTER_BGP_VRF_REGEX.search(seg)
+                    bgp_process = ROUTER_BGP_PARENT_REGEX.search(seg)
                     if bgp_process:
                         bgp_string += f"{bgp_process.group()}\n"
-                    bgp_vrf = re.search("^\s{2}vrf\s(.*)", seg)
                     if bgp_vrf:
                         bgp_string += "!\n"
                         bgp_string += f"{bgp_vrf.group()}\n"
 
-                    bgp_vrf_child = re.search("^\s{3}.*", seg)
+                    bgp_vrf_child = CHILDREN_WITH_3_SPACE_REGEX.search(seg)
                     if bgp_vrf_child:
                         bgp_string += f"{bgp_vrf_child.group()}\n"
 
         return bgp_string
-
-
-    def get_routing_protocol(self):
-        routing_segment = self._get_router_segment()
-        routing_protocol = _RoutingProtocol(_vrf_segment=routing_segment)
-        return routing_protocol
-
-
-class Parser:
-    def __init__(self, content):
-        self.content = content
-
-    def _add_bang_between_section(self):
-        sectioned_content = ""
-        splited_on_line = re.split("\n", self.content)
-        for i in splited_on_line:
-            parent_regex = re.search("^(\w+.*)", i)
-            children_regex = re.search("^\s+(.*)$", i)
-
-            if parent_regex:
-                sectioned_content += "!\n"
-                sectioned_content += f"{parent_regex.group()}\n"
-
-            if children_regex:
-                sectioned_content += f"{children_regex.group()}\n"
-
-        return sectioned_content

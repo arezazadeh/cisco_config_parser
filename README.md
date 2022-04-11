@@ -36,24 +36,62 @@ pip install cisco-config-parser
 
 * to find lines in the configuration starting with "router"
 ```ruby
-parse.find_parent_child(regex="^router")
+parse.find_parent_child("^router")
 ```
 
 
 * to parse all confuguration into parent and child format
 ```ruby
-parse.find_parent_child(regex="^.")
+parse.find_parent_child("^.")
 ```
 
 
 * to find lines in the configuration that has "Loopback" in them
 ```ruby
-parse.find_parent_child(regex="^.*Loopback")
+parse.find_parent_child("^.*Loopback")
 
 ```
 
 
 ## Examples:
+
+* Parsing NXOS Config For All the Related VLAN Info.
+
+- Note: if you want to parse NXOS config, you must specify the `platform="nxos"`, otherwise, the default value of `platform` is `cisco_ios`.
+
+```ruby
+>>> nxos_parser = ConfigParser(method="file", content=file1, platform="nxos")
+>>> vlan_info = nxos_parser.nxos_get_vlan_info()
+>>> vlan_info.vlan = "2626"
+>>> print(vlan_info.vlan)
+:return:
+!
+vlan 2626
+  name GRN200_nonPROD_APP_01
+  vn-segment 2002626
+!
+interface Vlan2626
+  description grn200 nonPROD App Servers 01
+  no shutdown
+  mtu 9216
+  vrf member GRN200
+  no ip redirects
+  ip address 10.147.148.1/24
+  no ipv6 redirects
+  fabric forwarding mode anycast-gateway
+!
+int nve1
+  member vni 2002626
+    suppress-arp
+    ingress-replication protocol bgp
+!
+evpn
+  vni 2002626 l2
+    rd auto
+    route-target import auto
+    route-target export aut
+
+```
 
 * Getting Routed Ports
 
@@ -146,7 +184,7 @@ Voice  vlan 700
     parse = ConfigParser(method="file", content=my_file)
     
     
-    obj_list = parse.find_parent_child(regex="^router")
+    obj_list = parse.find_parent_child("^router")
     for i in obj_list:
         print(i.parent)
         for child_obj in i.child:
@@ -186,7 +224,7 @@ Voice  vlan 700
 
     my_file = "switch01_running_config.txt"
     parse = ConfigParser(method="file", content=my_file)
-    obj_list = parse.find_parent_child(regex="^interface")
+    obj_list = parse.find_parent_child("^interface")
 
     for i in obj_list:
         vlan_200 = re.search("Vlan200", i.parent)
