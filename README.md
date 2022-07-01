@@ -103,7 +103,7 @@ my_file = "running-config.txt"
 
 parser = ConfigParser(method="file", content=my_file)
 
-obj = parser.get_routed_port()
+obj = parser.ios_get_routed_port()
 
 for i in obj:
     print(i.intf)
@@ -145,7 +145,7 @@ my_file = "switch01_run_config.txt"
 
 parser = ConfigParser(method="file", content=my_file)
 
-obj = parser.get_switchport(mode="access")
+obj = parser.ios_get_switchport(mode="access")
 
 for i in obj:
     print(i.port)
@@ -253,7 +253,7 @@ from cisco_config_parser import ConfigParser
 my_file = "switch_01-run_config.txt"
 parser = ConfigParser(method="file", content=my_file)
 
-res = parser.get_svi_objects()
+res = parser.ios_get_svi_objects()
 
 for i in res:
     if "lan200" in i.intf:
