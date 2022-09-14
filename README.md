@@ -57,10 +57,9 @@ parse.find_parent_child("^.*Loopback")
 
 * Parsing NXOS Config For All the Related VLAN Info.
 
-- Note: if you want to parse NXOS config, you must specify the `platform="nxos"`, otherwise, the default value of `platform` is `cisco_ios`.
 
 ```ruby
->>> nxos_parser = ConfigParser(method="file", content=file1, platform="nxos")
+>>> nxos_parser = ConfigParser(method="file", content=file1)
 >>> vlan_info = nxos_parser.nxos_get_vlan_info()
 >>> vlan_info.vlan = "2626"
 >>> print(vlan_info.vlan)

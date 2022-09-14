@@ -65,13 +65,18 @@ class SwitchPortTrunk:
 class RoutedPort:
     def __init__(self, **kwargs):
         self.intf = kwargs.get("intf") or None
-        self.ip_add = kwargs.get("ip_add") or None
+        self.ip = kwargs.get("ip") or None
         self.mask = kwargs.get("mask") or None
         self.subnet = kwargs.get("subnet") or None
         self.description = kwargs.get("description") or None
         self.vrf = kwargs.get("vrf") or None
         self.helper = kwargs.get("helper") or None
         self.state = kwargs.get("state") or None
+        self.sec_ip = kwargs.get("sec_ip") or None
+        self.sec_mask = kwargs.get("sec_mask") or None
+        self.sec_subnet = kwargs.get("sec_subnet") or None
+        self.vip = kwargs.get("vip") or None
+
 
     def __str__(self):
         return f"RoutedPort Class - {self.intf}"

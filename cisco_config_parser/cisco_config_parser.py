@@ -49,7 +49,6 @@ class ConfigParser:
         self.user = kwargs.get("user") or None
         self.password = kwargs.get("password") or None
         self.device_type = kwargs.get("device_type") or "cisco_ios"
-        self.platform = kwargs.get("platform") or "ios"
         
         # if self.method is None:
         #     Exception
@@ -84,39 +83,28 @@ class ConfigParser:
         """
         try:
             if self.method == "int_ssh":
-                if self.platform == "nxos":
-                    if self.ssh:
-                        content = self.ssh_to.ssh("show running-config")
-                        self.ssh_to.ssh_conn.disconnect()
-                        nxos_config_obj = NXOSConfigSeparator(content)
-                        nxos_config = nxos_config_obj._add_bang_between_section()
-                        obj_list = get_parent_child(nxos_config, regex)
-                        return obj_list
-                else:
-                    if self.ssh:
-                        content = self.ssh_to.ssh("show running-config")
-                        self.ssh_to.ssh_conn.disconnect()
-                        obj_list = get_parent_child(content, regex)
-                        return obj_list
-
-            elif self.method == "file":
-                if self.platform == "nxos":
-                    content = self._read_file()
-                    nxos_config_obj = NXOSConfigSeparator(content)
+                if self.ssh:
+                    content = self.ssh_to.ssh("show running-config")
+                    self.ssh_to.ssh_conn.disconnect()
+                    nxos_config_obj = ConfigLineSeparator(content)
                     nxos_config = nxos_config_obj._add_bang_between_section()
                     obj_list = get_parent_child(nxos_config, regex)
                     return obj_list
+ 
+
+            elif self.method == "file":
                 content = self._read_file()
-                obj_list = get_parent_child(content, regex)
+                nxos_config_obj = ConfigLineSeparator(content)
+                nxos_config = nxos_config_obj._add_bang_between_section()
+                obj_list = get_parent_child(nxos_config, regex)
                 return obj_list
 
+
             elif self.method == "ext_ssh":
-                if self.platform == "nxos":
-                    nxos_config_obj = NXOSConfigSeparator(content)
-                    nxos_config = nxos_config_obj._add_bang_between_section()
-                    obj_list = get_parent_child(nxos_config, regex)
-                obj_list = get_parent_child(self.content, regex)
-                return obj_list
+                nxos_config_obj = ConfigLineSeparator(content)
+                nxos_config = nxos_config_obj._add_bang_between_section()
+                obj_list = get_parent_child(nxos_config, regex)
+
         except Exception:
             raise PlatformError()
 
