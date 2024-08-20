@@ -81,32 +81,31 @@ class ConfigParser:
         :param regex: parsing the file based on the input regex
         :return: List (obj_list)
         """
-        try:
-            if self.method == "int_ssh":
-                if self.ssh:
-                    content = self.ssh_to.ssh("show running-config")
-                    self.ssh_to.ssh_conn.disconnect()
-                    nxos_config_obj = ConfigLineSeparator(content)
-                    nxos_config = nxos_config_obj._add_bang_between_section()
-                    obj_list = get_parent_child(nxos_config, regex)
-                    return obj_list
- 
-
-            elif self.method == "file":
-                content = self._read_file()
+        if self.method == "int_ssh":
+            if self.ssh:
+                content = self.ssh_to.ssh("show running-config")
+                self.ssh_to.ssh_conn.disconnect()
                 nxos_config_obj = ConfigLineSeparator(content)
                 nxos_config = nxos_config_obj._add_bang_between_section()
                 obj_list = get_parent_child(nxos_config, regex)
                 return obj_list
+ 
 
+        elif self.method == "file":
+            content = self._read_file()
+            nxos_config_obj = ConfigLineSeparator(content)
+            nxos_config = nxos_config_obj._add_bang_between_section()
+            obj_list = get_parent_child(nxos_config, regex)
+            return obj_list
+        
 
-            elif self.method == "ext_ssh":
-                nxos_config_obj = ConfigLineSeparator(content)
-                nxos_config = nxos_config_obj._add_bang_between_section()
-                obj_list = get_parent_child(nxos_config, regex)
+        elif self.method == "ext_ssh":
+            content = self.content
+            nxos_config_obj = ConfigLineSeparator(content)
+            nxos_config = nxos_config_obj._add_bang_between_section()
+            obj_list = get_parent_child(nxos_config, regex)
+            return obj_list
 
-        except Exception:
-            raise PlatformError()
 
 
     def ios_get_switchport(self, **kwargs):

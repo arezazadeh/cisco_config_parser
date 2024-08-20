@@ -20,11 +20,12 @@ class IntObj:
 
 class SwitchPortAccess:
     def __init__(self, **kwargs):
-        self.port = kwargs.get("port") or None
-        self.vlan = kwargs.get("vlan") or None
-        self.voice = kwargs.get("voice") or None
-        self.description = kwargs.get("description") or None
-        self.state = kwargs.get("state") or None
+        self.port = kwargs.get("port", None)
+        self.vlan = kwargs.get("vlan", None)
+        self.voice = kwargs.get("voice", None)
+        self.description = kwargs.get("description", None)
+        self.state = kwargs.get("state", None)
+        self.spanning_tree = kwargs.get("spanning_tree", None)
 
     def __str__(self):
         return f"SwitchPortAccess Class - {self.port}"
@@ -43,10 +44,12 @@ class SwitchPortAccess:
 
 class SwitchPortTrunk:
     def __init__(self, **kwargs):
-        self.port = kwargs.get("port") or None
-        self.description = kwargs.get("description") or None
-        self.allowed_vlan = kwargs.get("allowed_vlan") or None
+        self.port = kwargs.get("port", None)
+        self.description = kwargs.get("description", None)
+        self.allowed_vlan = kwargs.get("allowed_vlan", None)
         self.state = kwargs.get("state")
+        self.dhcp_snooping = kwargs.get("dhcp_snooping", None)
+        self.dhcp_relay = kwargs.get("dhcp_relay", None)
 
     def __str__(self):
         return f"SwitchPortTrunk Class - {self.port}"

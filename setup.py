@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '1.3.4'
+VERSION = '1.4'
 PACKAGE_NAME = 'cisco_config_parser'
 AUTHOR = 'Ahmad Rezazadeh'
 AUTHOR_EMAIL = 'ahmad1785@gmail.com'
@@ -14,9 +14,7 @@ DESCRIPTION = 'This Package Will Parse Cisco IOS, IOS-XE, IOS-XR and NXOS Config
 LONG_DESCRIPTION = (HERE / "README.md").read_text()
 LONG_DESC_TYPE = "text/markdown"
 
-INSTALL_REQUIRES = [
-      'netmiko',
-]
+
 
 setup(name=PACKAGE_NAME,
       version=VERSION,
@@ -27,6 +25,5 @@ setup(name=PACKAGE_NAME,
       license=LICENSE,
       author_email=AUTHOR_EMAIL,
       url=URL,
-      install_requires=INSTALL_REQUIRES,
       packages=find_packages()
       )
