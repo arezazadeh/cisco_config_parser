@@ -28,6 +28,7 @@ def parse_banner(content):
 
 
 
+
 def parse_routed_port(port_list):
     routed_port_list = []
     obj_list = []

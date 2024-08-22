@@ -2,7 +2,7 @@
 ## This Package Will Parse Cisco IOS, IOS-XE, IOS-XR, and NXOS Configuration File.
 
 There are two ways to parse the config, 1, SSH which is not recommended, and 2, feeding the running-config file 
-* to use file, use `ConfigParser(method="file", content=<your_file>)`. 
+* to use file, use `ConfigParser(method="file", content=<your_file>, json=True/False)`. 
 * to use SSH:
 ```ruby
 ConfigParser(
@@ -11,7 +11,7 @@ ConfigParser(
     user="username", 
     password="password", 
     device_type="cisco_ios", 
-    host="your_switch_ip"
+    host="your_switch_ip",
     )
 ```
 device types that are accepted are:
@@ -22,6 +22,8 @@ cisco_xr
 cisco_nxos
 ```
 pass the kwargs then it will login to your device and does the `show running-config` and will parse it. 
+
+**if you select `json=True` then the object will return the result in json format. else, it would return as list of objects.**
 
 ## Install the package
 
