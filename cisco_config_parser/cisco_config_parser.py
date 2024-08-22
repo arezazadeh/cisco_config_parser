@@ -42,13 +42,14 @@ class ConfigParser:
         password:str => default None
         device_type:str => default cisco_ios (cisco_ios, cisco_xe, cisco_xr)
         """
-        self.content = kwargs.get("content") or None
-        self.method = kwargs.get("method") or None
-        self.ssh = kwargs.get("ssh") or False
-        self.host = kwargs.get("host") or None
-        self.user = kwargs.get("user") or None
-        self.password = kwargs.get("password") or None
-        self.device_type = kwargs.get("device_type") or "cisco_ios"
+        self.content = kwargs.get("content", None)
+        self.method = kwargs.get("method", None)
+        self.ssh = kwargs.get("ssh", False)
+        self.host = kwargs.get("host", None)
+        self.user = kwargs.get("user", None)
+        self.password = kwargs.get("password", None)
+        self.device_type = kwargs.get("device_type", "cisco_ios")
+        self.json = kwargs.get("json", False)
         
         # if self.method is None:
         #     Exception
@@ -76,6 +77,20 @@ class ConfigParser:
             content = f.read()
             return content
 
+
+    def _convert_to_json(self, obj_list):
+        if self.json:
+            json_list = []
+            if isinstance(obj_list, list):
+                for obj in obj_list:
+                    json_list.append(obj.__dict__)
+                return json_list
+            json_list.append(obj_list.__dict__)
+            return json_list
+        else:
+            return obj_list
+
+
     def find_parent_child(self, regex):
         """
         :param regex: parsing the file based on the input regex
@@ -88,6 +103,8 @@ class ConfigParser:
                 nxos_config_obj = ConfigLineSeparator(content)
                 nxos_config = nxos_config_obj._add_bang_between_section()
                 obj_list = get_parent_child(nxos_config, regex)
+                if self.json:
+                    return self._convert_to_json(obj_list)
                 return obj_list
  
 
@@ -96,6 +113,8 @@ class ConfigParser:
             nxos_config_obj = ConfigLineSeparator(content)
             nxos_config = nxos_config_obj._add_bang_between_section()
             obj_list = get_parent_child(nxos_config, regex)
+            if self.json:
+                return self._convert_to_json(obj_list)
             return obj_list
         
 
@@ -104,8 +123,36 @@ class ConfigParser:
             nxos_config_obj = ConfigLineSeparator(content)
             nxos_config = nxos_config_obj._add_bang_between_section()
             obj_list = get_parent_child(nxos_config, regex)
+            if self.json:
+                return self._convert_to_json(obj_list)
             return obj_list
 
+
+    def ios_get_banner_login(self):
+        if self.method == "int_ssh":
+            if self.ssh:
+                content = self.ssh_to.ssh("show running-config")
+                self.ssh_to.ssh_conn.disconnect()
+                banner = parse_banner(content)
+                if self.json:
+                    return self._convert_to_json(banner)
+                return banner
+ 
+
+        elif self.method == "file":
+            content = self._read_file()
+            banner = parse_banner(content)
+            if self.json:
+                return self._convert_to_json(banner)
+            return banner
+
+
+        elif self.method == "ext_ssh":
+            content = self.content
+            banner = parse_banner(content)
+            if self.json:
+                return self._convert_to_json(banner)
+            return banner
 
 
     def ios_get_switchport(self, **kwargs):
@@ -124,6 +171,8 @@ class ConfigParser:
                 port_list = get_interface(content)
                 if len(port_list) > 0:
                     obj_list = parse_switch_port(port_list, mode)
+                    if self.json:
+                        return self._convert_to_json(obj_list)
                     return obj_list
 
         elif self.method == "file":
@@ -131,11 +180,15 @@ class ConfigParser:
             port_list = get_interface(content)
             if len(port_list) > 0:
                 obj_list = parse_switch_port(port_list, mode)
+                if self.json:
+                    return self._convert_to_json(obj_list)
                 return obj_list
 
         elif self.method == "ext_ssh":
             port_list = get_interface(self.content)
             obj_list = parse_switch_port(port_list, mode)
+            if self.json:
+                return self._convert_to_json(obj_list)
             return obj_list
 
     def ios_get_routed_port(self):
@@ -146,6 +199,8 @@ class ConfigParser:
                 port_list = get_interface(content)
                 if len(port_list) > 0:
                     obj_list = parse_routed_port(port_list)
+                    if self.json:
+                        return self._convert_to_json(obj_list)
                     return obj_list
 
         elif self.method == "file":
@@ -153,11 +208,15 @@ class ConfigParser:
             port_list = get_interface(content)
             if len(port_list) > 0:
                 obj_list = parse_routed_port(port_list)
+                if self.json:
+                    return self._convert_to_json(obj_list)
                 return obj_list
 
         elif self.method == "ext_ssh":
             port_list = get_interface(self.content)
             obj_list = parse_routed_port(port_list)
+            if self.json:
+                return self._convert_to_json(obj_list)
             return obj_list
 
     def ios_get_svi_objects(self):
@@ -167,16 +226,24 @@ class ConfigParser:
                 content = self.ssh_to.ssh("show running-config")
                 obj_list = get_svi(content)
                 if len(obj_list) > 0:
+                    if self.json:
+                        return self._convert_to_json(obj_list)
                     return obj_list
 
         elif self.method == "file":
             content = self._read_file()
             obj_list = get_svi(content)
             if len(obj_list) > 0:
+                if self.json:
+                    return self._convert_to_json(obj_list)
                 return obj_list
 
         elif self.method == "ext_ssh":
             obj_list = get_svi(self.content)
+            if len(obj_list) > 0:
+                if self.json:
+                    return self._convert_to_json(obj_list)
+                return obj_list
             return obj_list
 
 
@@ -220,17 +287,23 @@ class ConfigParser:
                 content = self.ssh_to.ssh("show running-config")
                 vlan_info_obj = NXOSGetParent(content=content)
                 vlan_info = vlan_info_obj._get_vlan_info()
+                if self.json:
+                    return self._convert_to_json(vlan_info)
                 return vlan_info
 
         elif self.method == "file":
             content = self._read_file()
             vlan_info_obj = NXOSGetParent(content=content)
             vlan_info = vlan_info_obj._get_vlan_info()
+            if self.json:
+                return self._convert_to_json(vlan_info)
             return vlan_info
 
         elif self.method == "ext_ssh":
             vlan_info_obj = NXOSGetParent(content=self.content)
             vlan_info = vlan_info_obj._get_vlan_info()
+            if self.json:
+                return self._convert_to_json(vlan_info)
             return vlan_info
 
 
@@ -254,17 +327,23 @@ class ConfigParser:
                 content = self.ssh_to.ssh("show running-config")
                 vlan_obj = NXOSGetParent(content=content)
                 vlan_obj_list = vlan_obj._get_vlan()
+                if self.json:
+                    return self._convert_to_json(vlan_obj_list)
                 return vlan_obj_list
 
         elif self.method == "file":
             content = self._read_file()
             vlan_obj = NXOSGetParent(content=content)
             vlan_obj_list = vlan_obj._get_vlan()
+            if self.json:
+                return self._convert_to_json(vlan_obj_list)
             return vlan_obj_list
 
         elif self.method == "ext_ssh":
             vlan_obj = NXOSGetParent(content=self.content)
             vlan_obj_list = vlan_obj._get_vlan()
+            if self.json:
+                return self._convert_to_json(vlan_obj_list)
             return vlan_obj_list
 
     def nxos_get_l3_int(self):
@@ -284,17 +363,23 @@ class ConfigParser:
                 content = self.ssh_to.ssh("show running-config")
                 l3_intf_obj = NXOSGetParent(content=content)
                 l3_intf_obj_list = l3_intf_obj._get_l3_int()
+                if self.json:
+                    return self._convert_to_json(l3_intf_obj_list)
                 return l3_intf_obj_list
 
         elif self.method == "file":
             content = self._read_file()
             l3_intf_obj = NXOSGetParent(content=content)
             l3_intf_obj_list = l3_intf_obj._get_l3_int()
+            if self.json:
+                return self._convert_to_json(l3_intf_obj_list)
             return l3_intf_obj_list
 
         elif self.method == "ext_ssh":
             l3_intf_obj = NXOSGetParent(content=self.content)
             l3_intf_obj_list = l3_intf_obj._get_l3_int()
+            if self.json:
+                return self._convert_to_json(l3_intf_obj_list)
             return l3_intf_obj_list
 
     def nxos_get_routing_protocol(self):
@@ -321,15 +406,23 @@ class ConfigParser:
                 content = self.ssh_to.ssh("show running-config")
                 bgp_obj = NXOSGetParent(content=content)
                 bgp_routing_protocol_obj = bgp_obj._get_routing_protocol()
+                if self.json:
+                    return self._convert_to_json(bgp_routing_protocol_obj)
                 return bgp_routing_protocol_obj
 
         elif self.method == "file":
             content = self._read_file()
             bgp_obj = NXOSGetParent(content=content)
             bgp_routing_protocol_obj = bgp_obj._get_routing_protocol()
+            if self.json:
+                return self._convert_to_json(bgp_routing_protocol_obj)
             return bgp_routing_protocol_obj
 
         elif self.method == "ext_ssh":
             bgp_obj = NXOSGetParent(content=self.content)
             bgp_routing_protocol_obj = bgp_obj._get_routing_protocol()
+            if self.json:
+                return self._convert_to_json(bgp_routing_protocol_obj)
             return bgp_routing_protocol_obj
+
+

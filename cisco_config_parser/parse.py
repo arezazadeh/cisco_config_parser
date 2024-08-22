@@ -4,6 +4,30 @@ from .obj import *
 from .regex import *
 
 
+
+def parse_banner(content):
+    banner_obj = BannerObj()
+    banner_lines = []
+    split_line = content.splitlines()
+    banner_found = False
+    for line in split_line:
+        strip_line = line.strip()
+        if strip_line.startswith("banner"):
+            banner_found = True
+            banner_lines.append(strip_line)
+        elif banner_found:
+            if strip_line.startswith("^C"):
+                banner_found = False
+                banner_lines.append(strip_line)
+            else:
+                banner_lines.append(strip_line)
+    banner_obj.banner = "\n".join(banner_lines)
+    return banner_obj
+
+
+
+
+
 def parse_routed_port(port_list):
     routed_port_list = []
     obj_list = []

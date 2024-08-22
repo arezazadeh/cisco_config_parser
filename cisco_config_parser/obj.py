@@ -6,12 +6,12 @@ class ParentObj:
 
 class IntObj:
     def __init__(self, **kwargs):
-        self.intf = kwargs.get("intf") or None
-        self.ip_add = kwargs.get("ip_add") or None
-        self.description = kwargs.get("description") or None
-        self.vrf = kwargs.get("vrf") or None
-        self.helper = kwargs.get("helper") or None
-        self.state = kwargs.get("state") or None
+        self.intf = kwargs.get("intf", None)
+        self.ip_add = kwargs.get("ip_add", None)
+        self.description = kwargs.get("description", None)
+        self.vrf = kwargs.get("vrf", None)
+        self.helper = kwargs.get("helper", None)
+        self.state = kwargs.get("state", None)
 
     def __str__(self):
         return f"IntObj Class - {self.intf}"
@@ -67,20 +67,26 @@ class SwitchPortTrunk:
 
 class RoutedPort:
     def __init__(self, **kwargs):
-        self.intf = kwargs.get("intf") or None
-        self.ip = kwargs.get("ip") or None
-        self.mask = kwargs.get("mask") or None
-        self.subnet = kwargs.get("subnet") or None
-        self.description = kwargs.get("description") or None
-        self.vrf = kwargs.get("vrf") or None
-        self.helper = kwargs.get("helper") or None
-        self.state = kwargs.get("state") or None
-        self.sec_ip = kwargs.get("sec_ip") or None
-        self.sec_mask = kwargs.get("sec_mask") or None
-        self.sec_subnet = kwargs.get("sec_subnet") or None
-        self.vip = kwargs.get("vip") or None
+        self.intf = kwargs.get("intf", None)
+        self.ip = kwargs.get("ip", None)
+        self.mask = kwargs.get("mask", None)
+        self.subnet = kwargs.get("subnet", None)
+        self.description = kwargs.get("description", None)
+        self.vrf = kwargs.get("vrf", None)
+        self.helper = kwargs.get("helper", None)
+        self.state = kwargs.get("state", None)
+        self.sec_ip = kwargs.get("sec_ip", None)
+        self.sec_mask = kwargs.get("sec_mask", None)
+        self.sec_subnet = kwargs.get("sec_subnet", None)
+        self.vip = kwargs.get("vip", None)
 
 
     def __str__(self):
         return f"RoutedPort Class - {self.intf}"
 
+
+class BannerObj:
+    def __init__(self, **kwargs):
+        self.banner = kwargs.get("banner", None)
+        
+    
