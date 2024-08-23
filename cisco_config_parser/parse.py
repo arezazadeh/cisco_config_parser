@@ -89,10 +89,6 @@ def parse_routed_port(port_list):
                     
                     if vrrp_regex:
                         routed_port_obj.vip = vrrp_regex.group(1)
-                        print(routed_port_obj.vip)
-
-
-
 
             elif ent.strip().startswith("ipv4 address"):
                 address = ent.split("ipv4 address")[1]
