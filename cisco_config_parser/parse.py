@@ -39,86 +39,88 @@ def parse_routed_port(port_list):
                 routed_port_list.append(i)
                 
     for line in routed_port_list:
+        child_list = []
         routed_port_obj = RoutedPort()
-
         helper_list = []
         split_line = SPLIT_ON_LINE.split(line.strip())
         intf_addresses = []
         for ent in split_line:
+            child_list.append(ent.strip()) if not ent.startswith("interface") else None
             if ent.strip().startswith("shutdown"):
                 routed_port_obj.state = "disabled"
                 
             elif ent.strip().startswith("interface"):
                 intf_name = re.search("interface\s(.*)", ent.strip())
-                routed_port_obj.intf = intf_name.group(1)
+                routed_port_obj.intf = intf_name.group(1).strip()
                 
             elif ent.strip().startswith("description"):
                 description = re.search("description\s(.*)", ent.strip())
-                routed_port_obj.description = description.group(1)
+                routed_port_obj.description = description.group(1).strip()
                 
             elif ent.strip().startswith("ip address"):
                 if "secondary" in ent.strip():
                     address = ent.split("ip address")[1].split("secondary")[0]
                     addr_mask = address.split()
-                    routed_port_obj.sec_ip = addr_mask[0]
-                    routed_port_obj.sec_mask = addr_mask[1]
-                    routed_port_obj.sec_subnet = ipaddress.ip_network(f"{routed_port_obj.sec_ip}/{routed_port_obj.sec_mask}", strict=False)
+                    routed_port_obj.sec_ip = addr_mask[0].strip()
+                    routed_port_obj.sec_mask = addr_mask[1].strip()
+                    routed_port_obj.sec_subnet = str(ipaddress.ip_network(f"{routed_port_obj.sec_ip}/{routed_port_obj.sec_mask}", strict=False)).strip()
                 else:
                     address = ent.split("ip address")[1]
                     addr_mask = address.split()
-                    routed_port_obj.ip = addr_mask[0]
-                    routed_port_obj.mask = addr_mask[1]
+                    routed_port_obj.ip = addr_mask[0].strip()
+                    routed_port_obj.mask = addr_mask[1].strip()
                     routed_port_obj.subnet = ipaddress.ip_network(f"{routed_port_obj.ip}/{routed_port_obj.mask}", strict=False)
                 
             elif ent.strip().startswith("standby"):
                 vip_regex = re.search("^standby\s\d+\sip\s(\S+)", ent.strip())
                 if vip_regex:
-                    vip_ip = vip_regex.group(1)
-                    routed_port_obj.vip = vip_ip
+                    vip_ip = vip_regex.group(1).strip()
+                    routed_port_obj.vip = vip_ip.strip()
 
             elif ent.strip().startswith("vrrp"):
                 # Old VRRP Config 
                 vip_regex = re.search("^vrrp\s\d+\sip\s(\S+)", ent.strip())
                 if vip_regex:
-                    vip_ip = vip_regex.group(1)
-                    routed_port_obj.vip = vip_ip
+                    vip_ip = vip_regex.group(1).strip()
+                    routed_port_obj.vip = vip_ip.strip()
                     
                 # New VRRP Config where vrrp is parent/child config
                 else:
                     vrrp_regex = re.search("^\s+address\s+(\d+.\d+.\d+.\d+)\s+.*", line, flags=re.MULTILINE)
                     
                     if vrrp_regex:
-                        routed_port_obj.vip = vrrp_regex.group(1)
+                        routed_port_obj.vip = vrrp_regex.group(1).strip()
 
             elif ent.strip().startswith("ipv4 address"):
                 address = ent.split("ipv4 address")[1]
                 addr_mask = address.split()
-                routed_port_obj.ip = addr_mask[0]
-                routed_port_obj.mask = addr_mask[1]
-                routed_port_obj.subnet = ipaddress.ip_network(f"{routed_port_obj.ip}/{routed_port_obj.mask}", strict=False)
+                routed_port_obj.ip = addr_mask[0].strip()
+                routed_port_obj.mask = addr_mask[1].strip()
+                routed_port_obj.subnet = str(ipaddress.ip_network(f"{routed_port_obj.ip}/{routed_port_obj.mask}", strict=False)).strip()
                 
             elif ent.strip().startswith("ip helper-address"):
                 helper_list.append(ent)
                 
             elif ent.strip().startswith("ip vrf forwarding"):
                 vrf_name = re.search("ip\svrf\sforwarding\s(\S+)", ent.strip())
-                routed_port_obj.vrf = vrf_name.group(1)
+                routed_port_obj.vrf = vrf_name.group(1).strip()
                 
             elif ent.strip().startswith("vrf member"):
                 vrf_name = re.search("vrf\smember\s(\S+)", ent.strip())
-                routed_port_obj.vrf = vrf_name.group(1)
+                routed_port_obj.vrf = vrf_name.group(1).strip()
 
             elif ent.strip().startswith("vrf forwarding"):
                 vrf_name = re.search("vrf\sforwarding\s(\S+)", ent.strip())
-                routed_port_obj.vrf = vrf_name.group(1)
+                routed_port_obj.vrf = vrf_name.group(1).strip()
 
             elif ent.strip().startswith("vrf"):
                 vrf_name = re.search("vrf\s(\S+)", ent.strip())
-                routed_port_obj.vrf = vrf_name.group(1)
+                routed_port_obj.vrf = vrf_name.group(1).strip()
                 
         if routed_port_obj.state is None:
             routed_port_obj.state = "enabled"
-            
+
+        routed_port_obj.child = child_list
         routed_port_obj.helper = helper_list
         
         obj_list.append(routed_port_obj)
@@ -193,31 +195,34 @@ def get_svi(content):
     for i in intf_vlan_list:
         interface_obj = IntObj()
         helper_list = []
+        child_list = []
         
         line = SPLIT_ON_LINE.split(i.strip())
         
         for ent in line:
+            child_list.append(ent.strip()) if "interface Vlan" not in ent else None
             if ent.strip().startswith("shutdown"):
                 interface_obj.state = "disabled"
                 
             if ent.strip().startswith("interface Vlan"):
-                interface_obj.intf = ent
+                interface_obj.intf = ent.strip()
                 
             if ent.strip().startswith("description"):
-                interface_obj.description = ent
+                interface_obj.description = ent.strip()
                 
             if ent.strip().startswith("ip address"):
-                interface_obj.ip_add = ent
+                interface_obj.ip_add = ent.strip()
                 
             if ent.strip().startswith("ip helper-address"):
                 helper_list.append(ent)
                 
             if ent.strip().startswith("ip vrf for"):
-                interface_obj.vrf_member = ent
+                interface_obj.vrf_member = ent.strip()
                 
         if interface_obj.state is None:
             interface_obj.state = "enabled"
-        
+
+        interface_obj.child = child_list
         interface_obj.helper = helper_list
         obj_list.append(interface_obj)
 
@@ -229,29 +234,30 @@ def is_trunk_port(port_list):
     obj_list = []
     for line in port_list:
         trunk_obj = SwitchPortTrunk()
-
+        child_list = []
         split_line = SPLIT_ON_LINE.split(line.strip())
         trunk_obj.port = split_line[0]
         
         for i in split_line:
+            child_list.append(i.strip()) if i != split_line[0] else None
             if "description" in i:
-                trunk_obj.description = i
+                trunk_obj.description = i.strip()
 
             if "switchport trunk allowed" in i:
-                trunk_obj.allowed_vlan = i
+                trunk_obj.allowed_vlan = i.strip()
 
             if i.strip().startswith("shutdown"):
                 trunk_obj.state = "disabled"
 
             if i.strip().startswith("ip dhcp snooping"):
-                trunk_obj.state = i
+                trunk_obj.state = i.strip()
 
             if i.strip().startswith("ip dhcp relay"):
-                trunk_obj.state = i
+                trunk_obj.state = i.strip()
 
         if trunk_obj.state is None:
             trunk_obj.state = "enabled"
-
+        trunk_obj.child = child_list
         obj_list.append(trunk_obj)
     return obj_list
 
@@ -260,31 +266,31 @@ def is_access_port(port_list):
     obj_list = []
     for line in port_list:
         access_obj = SwitchPortAccess()
-        
+        child_list = []
         split_line = SPLIT_ON_LINE.split(line.strip())
         access_obj.port = split_line[0]
         for i in split_line:
-
+            child_list.append(i.strip()) if i != split_line[0] else None
             if "description" in i:
                 access_obj.description = i.split("description")[1].strip()
 
             if "voice vlan" in i:
                 voice_vlan_id = i.split("voice")[1]
-                access_obj.voice = f"Voice {voice_vlan_id}"
+                access_obj.voice = i.strip()
 
             if "switchport access vlan" in i:
                 vlan_id = i.split("access vlan")[1]
-                access_obj.vlan = f"Vlan {vlan_id}"
+                access_obj.vlan = i.strip()
 
             if i.strip().startswith("spanning-tree"):
-                access_obj.spanning_tree = i
+                access_obj.spanning_tree = i.strip()
 
             if i.strip().startswith("shutdown"):
                 access_obj.state = "disabled"
 
         if access_obj.state is None:
             access_obj.state = "enabled"
-
+        access_obj.child = child_list
         obj_list.append(access_obj)
     return obj_list
 
@@ -308,6 +314,7 @@ class _L3IntfParentChildren:
         self.sec_subnet = kwargs.get("sec_subnet")
         self.sec_mask = kwargs.get("sec_mask")
         self.vip = kwargs.get("vip")
+        self.child = kwargs.get("child")
 
 
 class _VLAN:
@@ -535,8 +542,10 @@ class NXOSGetParent:
         split_line = SPLIT_ON_BANG_MULTILINE.split(sectioned_config)
         intf_obj_list = []
         for i in split_line:
+            child_list = []
             if i.strip().startswith("interface"):
                 if "ip address" in i.strip():
+                    child_list.append(i.strip()) if not i.strip().startswith("interface") else None
                     intf_parent_child = _L3IntfParentChildren()
                     res = re.findall("^\s+no\sshutdown", i, flags=re.MULTILINE)
                     if res:
@@ -548,52 +557,48 @@ class NXOSGetParent:
                     intf = SPLIT_ON_LINE.split(i.strip())
                     intf_name = re.search("interface\s(\S+)", intf[0].strip())
                     if intf_name:
-                        intf_parent_child.intf = intf_name.group(1)
+                        intf_parent_child.intf = intf_name.group(1).strip()
 
                     for item in intf:
                         print(item)
                         if "vrf member" in item.strip():
                             vrf_name = re.search("vrf\smember\s(\S+)", item.strip())
                             if vrf_name:
-                                intf_parent_child.vrf = vrf_name.group(1)
+                                intf_parent_child.vrf = vrf_name.group(1).strip()
     
 
                         if "ip address" in item.strip():
                             if "secondary" in item.strip():
                                 intf_ip = re.search("ip\saddress\s(\d+\.\d+\.\d+\.\d+)/(\d+)", item.strip())
-                                print(intf_ip)
                                 if intf_ip:
-                                    sec_ip = intf_ip.group(1)
-                                    sec_mask = intf_ip.group(2)
-                                    sec_subnet = f"{sec_ip}/{sec_mask}"
-                                    print(sec_ip, sec_mask, sec_subnet)
-                                    
-                                    intf_parent_child.sec_subnet = ipaddress.IPv4Interface(sec_subnet).network
-                                    intf_parent_child.sec_ip = sec_ip
-                                    intf_parent_child.sec_mask = sec_mask
-                                    print(intf_parent_child.sec_subnet, intf_parent_child.sec_ip, intf_parent_child.sec_mask)
+                                    sec_ip = intf_ip.group(1).strip()
+                                    sec_mask = intf_ip.group(2).strip()
+                                    sec_subnet = f"{sec_ip}/{sec_mask}".strip()
+
+                                    intf_parent_child.sec_subnet = str(ipaddress.IPv4Interface(sec_subnet).network).strip()
+                                    intf_parent_child.sec_ip = sec_ip.strip()
+                                    intf_parent_child.sec_mask = sec_mask.strip()
                             else:
                                 intf_ip = re.search("ip\saddress\s(\d+\.\d+\.\d+\.\d+)/(\d+)", item.strip())
                                 if intf_ip:
-                                    intf_parent_child.subnet = ipaddress.IPv4Interface(f"{intf_ip.group(1)}/{intf_ip.group(2)}").network
-                                    intf_parent_child.ip = intf_ip.group(1)
-                                    intf_parent_child.mask = intf_ip.group(2)
+                                    intf_parent_child.subnet = str(ipaddress.IPv4Interface(f"{intf_ip.group(1)}/{intf_ip.group(2)}").network).strip()
+                                    intf_parent_child.ip = intf_ip.group(1).strip()
+                                    intf_parent_child.mask = intf_ip.group(2).strip()
 
                         if "standby" in item.strip():
                             vip = re.search("standby\s\d+\sip\s(\d+\.\d+\.\d+\.\d+)", item.strip())
-                            intf_parent_child.vip = vip.group(1) if vip else None
+                            intf_parent_child.vip = vip.group(1).strip() if vip else None
 
                         if "vrrp" in item.strip():
                             vip = re.search("vrrp\s\d+\sip\s(\d+\.\d+\.\d+\.\d+)", item.strip())
-                            intf_parent_child.vip = vip.group(1) if vip else None
-                            print("VRRP in the item")
+                            intf_parent_child.vip = vip.group(1).strip() if vip else None
                             print(item)
 
 
                         if "description" in item.strip():
                             description = re.search("description\s+(.*)", item.strip())
-                            intf_parent_child.description = description.group(1) if description else None
-
+                            intf_parent_child.description = description.group(1).strip() if description else None
+                    intf_parent_child.child = child_list
                     intf_obj_list.append(intf_parent_child)
 
         return intf_obj_list
@@ -686,8 +691,8 @@ def get_cp_int_ip(content):
         ip_addr = re.search("^\s+ipv4-address\s(.*)", section, flags=re.MULTILINE)
         if intf_name:
             if ip_addr:
-                cp.intf = intf_name.group(1)
-                cp.ip = ip_addr.group(1)
+                cp.intf = intf_name.group(1).strip()
+                cp.ip = ip_addr.group(1).strip()
                 intf_info.append(cp)
 
     return intf_info

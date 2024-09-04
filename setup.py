@@ -3,10 +3,11 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '1.4.5'
+VERSION = '1.4.6'
 PACKAGE_NAME = 'cisco_config_parser'
 AUTHOR = 'Ahmad Rezazadeh'
-AUTHOR_EMAIL = 'ahmad1785@gmail.com'
+AUTHOR_EMAIL = 'ahmad@klevernet.io'
+
 URL = 'https://github.com/arezazadeh/cisco_config_parser'
 
 LICENSE = 'MIT License'

@@ -12,6 +12,7 @@ class IntObj:
         self.vrf = kwargs.get("vrf", None)
         self.helper = kwargs.get("helper", None)
         self.state = kwargs.get("state", None)
+        self.child = kwargs.get("child", None)
 
     def __str__(self):
         return f"IntObj Class - {self.intf}"
@@ -26,6 +27,7 @@ class SwitchPortAccess:
         self.description = kwargs.get("description", None)
         self.state = kwargs.get("state", None)
         self.spanning_tree = kwargs.get("spanning_tree", None)
+        self.child = kwargs.get("child", None)
 
     def __str__(self):
         return f"SwitchPortAccess Class - {self.port}"
@@ -50,6 +52,7 @@ class SwitchPortTrunk:
         self.state = kwargs.get("state")
         self.dhcp_snooping = kwargs.get("dhcp_snooping", None)
         self.dhcp_relay = kwargs.get("dhcp_relay", None)
+        self.child = kwargs.get("child", None)
 
     def __str__(self):
         return f"SwitchPortTrunk Class - {self.port}"
@@ -79,6 +82,7 @@ class RoutedPort:
         self.sec_mask = kwargs.get("sec_mask", None)
         self.sec_subnet = kwargs.get("sec_subnet", None)
         self.vip = kwargs.get("vip", None)
+        self.child = kwargs.get("child", None)
 
 
     def __str__(self):
