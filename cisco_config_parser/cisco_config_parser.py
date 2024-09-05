@@ -14,9 +14,6 @@ class ConfigParser(Parser):
     def ios_get_routed_port(self):
         return self._ios_fetch_routed_port()
 
-    def ios_get_switchport_details(self, **kwargs):
-        return self._ios_fetch_switchport_details(**kwargs)
-
     def ios_get_svi_objects(self):
         return self._ios_fetch_svi_objects()
 
