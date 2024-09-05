@@ -90,7 +90,7 @@ class Parser:
         else:
             return obj_list
 
-    def parent_child_relationship(self, regex):
+    def _parent_child_relationship(self, regex):
         """
         :param regex: parsing the file based on the input regex
         :return: List (obj_list)
@@ -126,7 +126,7 @@ class Parser:
                 return self._convert_to_json(obj_list)
             return obj_list
 
-    def ios_fetch_banner_login(self):
+    def _ios_fetch_banner_login(self):
         if self.method == "int_ssh":
             if self.ssh:
                 content = self.ssh_to.ssh("show running-config")
@@ -152,7 +152,7 @@ class Parser:
                 return self._convert_to_json(banner)
             return banner
 
-    def ios_fetch_switchport(self, **kwargs):
+    def _ios_fetch_switchport(self, **kwargs):
         """
 
         :param kwargs: str:mode=trunk/access - default access
@@ -188,7 +188,9 @@ class Parser:
                 return self._convert_to_json(obj_list)
             return obj_list
 
-    def ios_fetch_routed_port(self):
+
+
+    def _ios_fetch_routed_port(self):
 
         if self.method == "int_ssh":
             if self.ssh:
@@ -216,7 +218,7 @@ class Parser:
                 return self._convert_to_json(obj_list)
             return obj_list
 
-    def ios_fetch_svi_objects(self):
+    def _ios_fetch_svi_objects(self):
 
         if self.method == "int_ssh":
             if self.ssh:
@@ -243,7 +245,7 @@ class Parser:
                 return obj_list
             return obj_list
 
-    def nxos_fetch_vlan_info(self):
+    def _nxos_fetch_vlan_info(self):
         """
         >>> nxos_parser = ConfigParser(method="file", content=file1, platform="nxos")
         >>> vlan_info = nxos_parser.nxos_get_vlan_info()
@@ -301,7 +303,7 @@ class Parser:
                 return self._convert_to_json(vlan_info)
             return vlan_info
 
-    def nxos_fetch_vlan_list(self):
+    def _nxos_fetch_vlan_list(self):
         """
         >>> nxos_parser = ConfigParser(method="file", content=file1, platform="nxos")
         >>> vlan_info = nxos_parser.nxos_get_vlan()
@@ -340,7 +342,7 @@ class Parser:
                 return self._convert_to_json(vlan_obj_list)
             return vlan_obj_list
 
-    def nxos_fetch_l3_int(self):
+    def _nxos_fetch_l3_int(self):
         """
         >>> nxos_parser = ConfigParser(method="file", content=file1, platform="nxos")
         >>> l3_intf = nxos_parser.nxos_get_l3_int()
@@ -376,7 +378,7 @@ class Parser:
                 return self._convert_to_json(l3_intf_obj_list)
             return l3_intf_obj_list
 
-    def nxos_fetch_routing_protocol(self):
+    def _nxos_fetch_routing_protocol(self):
         """
         >>> nxos_parser = ConfigParser(method="file", content=file1, platform="nxos")
         >>> bgp_rp = nxos_parser.nxos_get_routing_protocol()

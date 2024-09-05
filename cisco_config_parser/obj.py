@@ -53,6 +53,7 @@ class SwitchPortTrunk:
         self.dhcp_snooping = kwargs.get("dhcp_snooping", None)
         self.dhcp_relay = kwargs.get("dhcp_relay", None)
         self.child = kwargs.get("child", None)
+        self.native_vlan = kwargs.get("native_vlan", None)
 
     def __str__(self):
         return f"SwitchPortTrunk Class - {self.port}"

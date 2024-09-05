@@ -26,7 +26,8 @@ EXCLUDED_VLAN_CONFIG_REGEX = re.compile("^vlan\s[0-9]+,.*")
 ROUTER_BGP_VRF_CONFIG_REGEX = re.compile("^vrf\s(.*)")
 VLAN_SVI_INTERFACE_MULTILINE_REGEX = re.compile("^interface Vlan(.*)", flags=re.MULTILINE)
 INTERFACE_MULTILINE_REGEX = re.compile("^interface\s+(.*)", flags=re.MULTILINE)
-
+TRUNK_ALLOWED_VLAN_REGEX = re.compile("allowed\svlan\s(.*)")
+TRUNK_NATIVE_VLAN_REGEX = re.compile("switchport\strunk\snative\svlan\s(.*)")
 
 def find_vrf_section(vrf, item):
     return re.search(f"^(vrf {vrf.upper()}.*)", item.strip())

@@ -1,7 +1,27 @@
+import json
 import re
 import ipaddress
 from .obj import *
 from .regex import *
+
+
+
+
+def parse_switch_port_details(trunk_obj_list, access_obj_list):
+    switchport_details = {
+        "trunk": {},
+        "access": {}
+    }
+    for trunk_obj in trunk_obj_list:
+        switchport_details["trunk"][trunk_obj.port] = [child.strip() for child in trunk_obj.child if child]
+
+    for access_obj in access_obj_list:
+        switchport_details["access"][access_obj.port] = [child.strip() for child in access_obj.child if child]
+
+    return switchport_details
+
+
+
 
 
 
@@ -153,6 +173,11 @@ def parse_switch_port(port_list, mode):
         trunk_obj_list = is_trunk_port(trunk_port_list)
         return trunk_obj_list
 
+    if mode == "all":
+        trunk_obj_list = is_trunk_port(trunk_port_list)
+        access_obj_list = is_access_port(access_port_list)
+        return parse_switch_port_details(trunk_obj_list, access_obj_list)
+
 
 def get_parent_child(content, regex):
     obj_list = []
@@ -244,7 +269,14 @@ def is_trunk_port(port_list):
                 trunk_obj.description = i.strip()
 
             if "switchport trunk allowed" in i:
-                trunk_obj.allowed_vlan = i.strip()
+                trunk_allowed_vlan_match = TRUNK_ALLOWED_VLAN_REGEX.search(i)
+                if trunk_allowed_vlan_match:
+                    trunk_obj.allowed_vlan = i.strip()
+
+            if "switchport trunk native" in i:
+                trunk_native_vlan_match = TRUNK_NATIVE_VLAN_REGEX.search(i)
+                if trunk_native_vlan_match:
+                    trunk_obj.native_vlan = i.strip()
 
             if i.strip().startswith("shutdown"):
                 trunk_obj.state = "disabled"
