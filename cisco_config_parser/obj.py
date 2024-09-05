@@ -28,6 +28,7 @@ class SwitchPortAccess:
         self.state = kwargs.get("state", None)
         self.spanning_tree = kwargs.get("spanning_tree", None)
         self.child = kwargs.get("child", None)
+        self.native_vlan = kwargs.get("native_vlan", None)
 
     def __str__(self):
         return f"SwitchPortAccess Class - {self.port}"

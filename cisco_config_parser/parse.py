@@ -23,8 +23,6 @@ def parse_switch_port_details(trunk_obj_list, access_obj_list):
 
 
 
-
-
 def parse_banner(content):
     banner_obj = BannerObj()
     banner_lines = []
@@ -307,11 +305,14 @@ def is_access_port(port_list):
                 access_obj.description = i.split("description")[1].strip()
 
             if "voice vlan" in i:
-                voice_vlan_id = i.split("voice")[1]
                 access_obj.voice = i.strip()
 
+            # this is for testing to check if the native vlan is being configured under access port
+            if "trunk native" in i:
+                access_obj.native_vlan = i.strip()
+
+
             if "switchport access vlan" in i:
-                vlan_id = i.split("access vlan")[1]
                 access_obj.vlan = i.strip()
 
             if i.strip().startswith("spanning-tree"):
