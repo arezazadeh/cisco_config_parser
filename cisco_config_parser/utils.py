@@ -169,7 +169,8 @@ class Parser:
                 if len(port_list) > 0:
                     obj_list = parse_switch_port(port_list, mode)
                     if self.json:
-                        return self._convert_to_json(obj_list)
+                        if not mode == "all":
+                            return self._convert_to_json(obj_list)
                     return obj_list
 
         elif self.method == "file":
@@ -178,14 +179,16 @@ class Parser:
             if len(port_list) > 0:
                 obj_list = parse_switch_port(port_list, mode)
                 if self.json:
-                    return self._convert_to_json(obj_list)
+                    if not mode == "all":
+                        return self._convert_to_json(obj_list)
                 return obj_list
 
         elif self.method == "ext_ssh":
             port_list = get_interface(self.content)
             obj_list = parse_switch_port(port_list, mode)
             if self.json:
-                return self._convert_to_json(obj_list)
+                if not mode == "all":
+                    return self._convert_to_json(obj_list)
             return obj_list
 
 
