@@ -1,22 +1,37 @@
+import json
+
 from cisco_config_parser import ConfigParser
-# from netmiko import ConnectHandler
-#
+from netmiko import ConnectHandler
+
 # router = {
-#     "device_type": "cisco_ios",
-#     "host": "10.250.80.1",
-#     "username": "netsmart",
-#     "password": "@lph@B0+",
-#     "fast_cli": False,
+#     'device_type': 'cisco_ios',
+#     'host': 'STNRNV-C10R26-BL01',
+#     'username': 'netsmart',
+#     'password': '@lph@B0+',
+#     'fast_cli': False
 # }
 #
-# ssh = ConnectHandler(**router)
-# ssh.send_command("terminal length 0")
-# res = ssh.send_command("show run", cmd_verify=False, read_timeout=900)
+# net_connect = ConnectHandler(**router)
+# output = net_connect.send_command("show run", cmd_verify=False, read_timeout=120)
+# net_connect.disconnect()
 
+nxos_file = "/Users/s0107094/devFolder/nxos_config.txt"
+ios_file = "/Users/s0107094/devFolder/config.txt"
 
-with open("/Users/s0107094/devFolder/config.txt", "r") as f:
+with open(nxos_file, "r") as f:
     res = f.read()
-parser = ConfigParser(method="ext_ssh", content=res)
 
-int_obj = parser.ios_get_switchport(mode="all")
-print(int_obj)
+
+l2_intf = ConfigParser(res)
+# print(l2_intf)
+
+parent_child = l2_intf.get_vlan_info()
+
+for i in parent_child:
+    print(i.vlan)
+    print(i.children)
+
+
+
+
+

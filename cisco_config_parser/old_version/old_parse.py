@@ -1,8 +1,9 @@
-import json
-import re
 import ipaddress
 from .obj import *
-from .regex import *
+from cisco_config_parser.parser_regex.regex import *
+
+
+
 
 
 
@@ -650,8 +651,8 @@ class ConfigLineSeparator:
         self.sectioned_content = ""
     
     def _add_bang_between_section(self):
-        splited_on_line = SPLIT_ON_LINE.split(self.content)
-        for i in splited_on_line:
+        split_on_line = SPLIT_ON_LINE.split(self.content)
+        for i in split_on_line:
             parent_regex = PARENT_LINE_REGEX.search(i)
             children_regex = CHILDREN_LINE_REGEX.search(i)
             if parent_regex:

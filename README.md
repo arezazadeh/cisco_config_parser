@@ -1,6 +1,47 @@
 # Cisco Configuration Parser
 ## This Package Will Parse Cisco IOS, IOS-XE, IOS-XR, and NXOS Configuration File.
 
+
+# New Features
+
+### 1. Layer3 Interfaces:
+- added interface details - returns dict of all layer3 interfaces
+- methods are unified 
+- platform agnostic 
+- able to set custom regex and create dynamic method 
+
+* Example: 
+
+```python
+l3_intf = ConfigParser(res)
+l3 = l3_intf.get_l3_interfaces(ip_pim="ip pim *",  ospf="ip ospf.*")
+
+for i in l3:
+    print(i.name)
+    print(i.ip_pim)
+    print(i.ospf)
+```
+Output:
+```python
+Loopback100
+ip pim sparse-mode
+ip ospf 100 area 0
+!
+Loopback200
+ip pim sparse-mode
+None
+!
+```
+
+### 1. Layer2 Interfaces:
+
+**Issue**: there are some Layer2 interfaces that by default dont have any configurations on them, and config_parser will only be able to determine the l2 or l3 if there are certain keywords in the config.
+
+
+<hr>
+<hr>
+
+
 There are two ways to parse the config, 1, SSH which is not recommended, and 2, feeding the running-config file 
 * to use file, use `ConfigParser(method="file", content=<your_file>, json=True/False)`. 
 * to use SSH:
