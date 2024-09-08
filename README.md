@@ -2,7 +2,7 @@
 ## This Package Will Parse Cisco IOS, IOS-XE, IOS-XR, and NXOS Configuration File.
 
 
-# New Features
+# New Version 2.0
 
 ### 1. Layer3 Interfaces:
 - added interface details - returns dict of all layer3 interfaces
@@ -13,6 +13,8 @@
 * Example: 
 
 ```python
+from cisco_config_parser import ConfigParser
+
 l3_intf = ConfigParser(res)
 l3 = l3_intf.get_l3_interfaces(ip_pim="ip pim *",  ospf="ip ospf.*")
 
@@ -41,12 +43,20 @@ None
 <hr>
 <hr>
 
+# Old Version < 2.0  
 
 There are two ways to parse the config, 1, SSH which is not recommended, and 2, feeding the running-config file 
+
 * to use file, use `ConfigParser(method="file", content=<your_file>, json=True/False)`. 
 * to use SSH:
-```ruby
-ConfigParser(
+
+
+```python
+from cisco_config_parser import ConfigParserOld
+
+
+
+ConfigParserOld(
     method="int_ssh",
     ssh=True, 
     user="username", 
@@ -102,7 +112,8 @@ parse.find_parent_child("^.*Loopback")
 
 
 ```ruby
->>> nxos_parser = ConfigParser(method="file", content=file1)
+
+>>> nxos_parser = ConfigParserOld(method="file", content=file1)
 >>> vlan_info = nxos_parser.nxos_get_vlan_info()
 >>> vlan_info.vlan = "2626"
 >>> print(vlan_info.vlan)
@@ -139,11 +150,11 @@ evpn
 
 ```ruby 
 
-from cisco_config_parser import ConfigParser
+from cisco_config_parser import ConfigParserOld
 
 my_file = "running-config.txt"
 
-parser = ConfigParser(method="file", content=my_file)
+parser = ConfigParserOld(method="file", content=my_file)
 
 obj = parser.ios_get_routed_port()
 
@@ -181,11 +192,11 @@ there are two different mode on switchport, `access` and `trunk`. you should spe
 
 ```ruby
 
-from cisco_config_parser import ConfigParser
+from cisco_config_parser import ConfigParserOld
 
 my_file = "switch01_run_config.txt"
 
-parser = ConfigParser(method="file", content=my_file)
+parser = ConfigParserOld(method="file", content=my_file)
 
 obj = parser.ios_get_switchport(mode="access")
 
@@ -219,11 +230,11 @@ Voice  vlan 700
 
 * Finding Routing Protocol
 ```ruby
-    from cisco_config_parser import ConfigParser
+    from cisco_config_parser import ConfigParserOld
     
     
     my_file = "switch01_running_config.txt"
-    parse = ConfigParser(method="file", content=my_file)
+    parse = ConfigParserOld(method="file", content=my_file)
     
     
     obj_list = parse.find_parent_child("^router")
@@ -261,11 +272,11 @@ Voice  vlan 700
  * Finding Interface and Helper address Example 
 
 ```ruby
-    from cisco_config_parser import ConfigParser
+    from cisco_config_parser import ConfigParserOld
 
 
     my_file = "switch01_running_config.txt"
-    parse = ConfigParser(method="file", content=my_file)
+    parse = ConfigParserOld(method="file", content=my_file)
     obj_list = parse.find_parent_child("^interface")
 
     for i in obj_list:
@@ -288,12 +299,12 @@ interface Vlan200
 
 ```ruby 
 
-from cisco_config_parser import ConfigParser
+from cisco_config_parser import ConfigParserOld
 
 
 
 my_file = "switch_01-run_config.txt"
-parser = ConfigParser(method="file", content=my_file)
+parser = ConfigParserOld(method="file", content=my_file)
 
 res = parser.ios_get_svi_objects()
 

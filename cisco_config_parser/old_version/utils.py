@@ -3,7 +3,7 @@ from .ssh import *
 from .old_parse import *
 
 
-class Parser_backup:
+class OldParser:
     """
     - Example: Finding Routing Protocol
     my_file = "switch01_running_config.txt"

@@ -1,6 +1,7 @@
 import json
 
 from cisco_config_parser import ConfigParser
+from cisco_config_parser import ConfigParserOld
 from netmiko import ConnectHandler
 
 # router = {
@@ -18,19 +19,16 @@ from netmiko import ConnectHandler
 nxos_file = "/Users/s0107094/devFolder/nxos_config.txt"
 ios_file = "/Users/s0107094/devFolder/config.txt"
 
-with open(nxos_file, "r") as f:
+with open(ios_file, "r") as f:
     res = f.read()
 
 
-l2_intf = ConfigParser(res)
+l2_intf = ConfigParserOld(content=res, method="ext_ssh")
 # print(l2_intf)
 
-parent_child = l2_intf.get_vlan_info()
 
-for i in parent_child:
-    print(i.vlan)
-    print(i.children)
-
+l2 = l2_intf.ios_get_switchport(mode="access")
+print(l2)
 
 
 

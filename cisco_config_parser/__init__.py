@@ -1,8 +1,9 @@
-from .cisco_config_parser import ConfigParser
+from .cisco_config_parser import ConfigParser, ConfigParserOld
 
 
 _ALL_ = [
     "ConfigParser"
+    "ConfigParserOld",
 ]
 
 __version__ = "1.4.6"
