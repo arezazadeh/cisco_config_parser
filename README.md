@@ -1,8 +1,17 @@
 # Cisco Configuration Parser
-## This Package Will Parse Cisco IOS, IOS-XE, IOS-XR, and NXOS Configuration File.
 
+This library is used for Network Automation involving Cisco Routers and Switch. It will parse Cisco IOS, IOS-XE, IOS-XR, and NXOS configuration file into objects and/or json format
 
-# New Version 2.0 
+##  New Version 2.0 
+
+## Install the package
+
+https://pypi.org/project/cisco-config-parser/
+
+```bash
+pip install cisco-config-parser
+```
+
 
 ## Classes in this library
 
@@ -83,9 +92,6 @@ for i in eigrp:
 
 ```
 
-
-
-
 ### 1. Layer3 Interfaces:
 - added interface details - returns dict of all layer3 interfaces
 - methods are unified 
@@ -126,7 +132,7 @@ None
 <hr>
 <hr>
 
-# Old Version < 2.0  
+## Old Version < 2.0  
 
 There are two ways to parse the config, 1, SSH which is not recommended, and 2, feeding the running-config file 
 
@@ -158,14 +164,6 @@ cisco_nxos
 pass the kwargs then it will login to your device and does the `show running-config` and will parse it. 
 
 **if you select `json=True` then the object will return the result in json format. else, it would return as list of objects.**
-
-## Install the package
-
-https://pypi.org/project/cisco-config-parser/
-
-```ruby
-pip install cisco-config-parser
-```
 
 
 ## Regex Search Strings:
