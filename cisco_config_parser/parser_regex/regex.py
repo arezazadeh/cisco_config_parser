@@ -17,7 +17,8 @@ CHILDREN_WITH_4_SPACE_REGEX = re.compile(r"\s{4}.*")
 CHILDREN_WITH_5_SPACE_REGEX = re.compile(r"\s{5}.*")
 ROUTER_BGP_PARENT_REGEX = re.compile(r"^router bgp(.*)")
 ROUTER_BGP_VRF_REGEX = re.compile(r"^\s{2}vrf\s(.*)")
-SPLIT_ON_BANG_MULTILINE = re.compile(r"!", flags=re.MULTILINE)
+SPLIT_ON_BANG_MULTILINE = re.compile(r"^!", flags=re.MULTILINE)
+SPLIT_ON_SECOND_BANG_MULTILINE = re.compile(r"\s!$", flags=re.MULTILINE)
 SPLIT_ON_FIRST_BANG_MULTILINE = re.compile(r"^!$", flags=re.MULTILINE)
 SPLIT_ON_LINE = re.compile(r"\n")
 SPLIT_ON_LINE_MULTILINE = re.compile(r"\n", flags=re.MULTILINE)
@@ -37,9 +38,11 @@ INTERFACE_REGEX = re.compile(r"interface\s(.*)", flags=re.MULTILINE)
 # L3 Interface
 DESCRIPTION_REGEX = re.compile(r"description\s(.*)", flags=re.MULTILINE)
 IP_ADDRESS_REGEX = re.compile(r"ip\saddress\s(\d+\.\d+\.\d+\.\d+\s\d+\.\d+\.\d+\.\d+)|ip\saddress\s(\d+\.\d+\.\d+\.\d+/\d+)")
+IP_ADDRESS_CIDR_REGEX = re.compile(r"ip\saddress\s(\d+\.\d+\.\d+\.\d+/\d+)")
 HELPER_ADDRESS_REGEX = re.compile(r"ip\shelper-address\s(.*)")
 SECONDARY_IP_ADDRESS_REGEX = re.compile(r"ip\saddress\s(.*)secondary")
 VRF_REGEX = re.compile(r"ip\svrf\sforwarding\s(.*)|vrf\smember\s(.*)")
+
 
 
 # L2 Interface
@@ -55,6 +58,48 @@ SWITCHPORT_TRUNK_SNOOPING_REGEX = re.compile(r"ip\ssnooping\s(.*)", flags=re.MUL
 
 # VLAN
 VLAN_REGEX = re.compile(r"^vlan\s([0-9]+)", flags=re.MULTILINE)
+
+# Routing Protocol
+RTP_REGEX = re.compile(r"^router\s(.*)", flags=re.MULTILINE)
+
+RTP_BGP_REGEX = re.compile(r"^router bgp", flags=re.MULTILINE)
+RTP_ISIS_REGEX = re.compile(r"^router isis", flags=re.MULTILINE)
+RTP_RIP_REGEX = re.compile(r"^router rip", flags=re.MULTILINE)
+
+# Static Route IOS
+RTP_IOS_STATIC_REGEX = re.compile(r"^ip route", flags=re.MULTILINE)
+RTP_IOS_STATIC_AD_REGEX = re.compile(r"^ip\sroute\s\d+\.\d+\.\d+\.\d+\s\d+\.\d+\.\d+\.\d+\s\d+\.\d+\.\d+\.\d+\s(\d+)", flags=re.MULTILINE)
+RTP_IOS_STATIC_NAME_REGEX = re.compile(r"^ip\sroute\s.*name(.*)", flags=re.MULTILINE)
+RTP_IOS_STATIC_VRF_REGEX = re.compile(r"^ip\sroute\svrf\s(\S+)", flags=re.MULTILINE)
+
+
+# DETERMINE PLATFORM
+IOS_PLATFORM_REGEX_1 = re.compile(r"^Current\sconfiguration\s:\s\d+\sbytes", flags=re.MULTILINE)
+NXOS_PLATFORM_REGEX_1 = re.compile(r"^!Command:\sshow\srunning-config", flags=re.MULTILINE)
+NXOS_PLATFORM_REGEX_2 = re.compile(r"^feature\s.*", flags=re.MULTILINE)
+XR_PLATFORM_REGEX_1 = re.compile(r"^!!\sIOS\sXR\sConfiguration.*", flags=re.MULTILINE)
+XR_PLATFORM_REGEX_2 = re.compile(r"^prefix-set.*", flags=re.MULTILINE)
+XR_PLATFORM_REGEX_3 = re.compile(r"^route-policy.*", flags=re.MULTILINE)
+
+
+# IOS ROUTING PROTOCOL - OSPF
+RTP_IOS_OSPF_REGEX = re.compile(r"^router\sospf\s(.*)", flags=re.MULTILINE)
+RTP_IOS_OSPF_ROUTER_ID_REGEX = re.compile(r"\s+router-id\s(\d+\.\d+\.\d+\.\d+)", flags=re.MULTILINE)
+RTP_IOS_OSPF_NETWORK_REGEX = re.compile(r"\s+network\s(\d+\.\d+\.\d+\.\d+)\s(\d+\.\d+\.\d+\.\d+)\sarea\s(\S+)", flags=re.MULTILINE)
+RTP_IOS_OSPF_NO_PASSIVE_INTERFACE_REGEX = re.compile(r"\s+no\spassive-interface\s(.*)", flags=re.MULTILINE)
+RTP_IOS_OSPF_PASSIVE_INTERFACE_REGEX = re.compile(r"\s+passive-interface\s(.*)", flags=re.MULTILINE)
+RTP_IOS_OSPF_AUTO_COST_REGEX = re.compile(r"\s+auto-cost\sreference-bandwidth\s(\d+)", flags=re.MULTILINE)
+RTP_IOS_OSPF_INTERFACES_REGEX = re.compile(r"\s+ip\sospf\s\d+\s+area\s.*", flags=re.MULTILINE)
+RTP_IOS_OSPF_INTERFACES_AREA_REGEX = re.compile(r"\s+ip\sospf\s\d+\s+area\s(\S+)", flags=re.MULTILINE)
+RTP_IOS_OSPF_INTERFACES_PROCESS_ID_REGEX = re.compile(r"\s+ip\sospf\s(\d+)\s+area\s.*", flags=re.MULTILINE)
+
+
+# IOS ROUTING PROTOCOL - EIGRP
+RTP_EIGRP_REGEX = re.compile(r"^router eigrp", flags=re.MULTILINE)
+RTP_IOS_EIGRP_VRF_REGEX = re.compile(r"\s+address-family\sipv4\svrf\s(\S+)", flags=re.MULTILINE)
+RTP_IOS_EIGRP_NETWORK_REGEX = re.compile(r"\s+network\s(\d+\.\d+\.\d+\.\d+)\s(\d+\.\d+\.\d+\.\d+)", flags=re.MULTILINE)
+
+
 
 def find_vrf_section(vrf, item):
     return re.search(f"^(vrf {vrf.upper()}.*)", item.strip())

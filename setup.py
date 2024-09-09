@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '2.0'
+VERSION = '2.1'
 PACKAGE_NAME = 'cisco_config_parser'
 AUTHOR = 'Ahmad Rezazadeh'
 AUTHOR_EMAIL = 'ahmad@klevernet.io'

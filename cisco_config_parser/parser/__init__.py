@@ -4,8 +4,33 @@ from .parser import Parser
 
 
 class ConfigParser(Parser):
-    def __init__(self, _content):
-        super().__init__(_content)
+    def __init__(self, _content, platform=None):
+        super().__init__(_content, platform=platform)
+
+
+    def get_static_config(self, return_json=False):
+        """
+        Get the static routes from the config file
+        :return: list of static route objects
+        """
+        return self._get_static_config(return_json=return_json)
+
+
+    def get_ospf_config(self, return_json=False):
+        """
+        Get the ospf configuration from the config file
+        :return: list of ospf objects or json
+        """
+        return self._get_ospf_config(return_json=return_json)
+
+
+    def get_eigrp_config(self, return_json=False):
+        """
+        Get the eigrp configuration from the config file
+        :return: list of eigrp objects or json
+        """
+        return self._get_eigrp_config(return_json=return_json)
+
 
     def get_vlan_info(self):
         """
@@ -27,6 +52,15 @@ class ConfigParser(Parser):
         :return: list of parent child objects
         """
         return self._get_parent_child(**kwargs)
+
+
+    def get_subnet_and_usage(self, include_subnet_count=False):
+        """
+        Fetch the subnet usage from the config file
+        return: dictionary of subnet usage
+        """
+        return self._get_subnet_and_usage(include_subnet_count=include_subnet_count)
+
 
     def get_l3_interfaces(self, **kwargs):
         """

@@ -5,6 +5,8 @@ import ipaddress
 
 class _L3SectionParser:
 
+
+
     @classmethod
     def _parse_ip_address_line(cls, **kwargs):
         """
@@ -16,11 +18,34 @@ class _L3SectionParser:
         mask using the ipaddress module
         return: l3_interface_obj
         """
+
+        def process_ip_address_with_cidr(ip_address_with_cidr, obj):
+            """
+            Process the ip address with cidr
+            :param ip_address_with_cidr: str
+            :param obj: L3Interface object
+            :return:
+            """
+            ip_address_config = ip_address_with_cidr.split("/")
+            ip_addr = ip_address_config[0].strip()
+            cidr = ip_address_config[1].strip()
+            subnet_ = ipaddress.IPv4Network(f"{ip_addr}/{cidr}", strict=False)
+            obj.ip_address = ip_addr.strip()
+            obj.mask = str(subnet_.netmask)
+            obj.subnet = str(subnet_).strip()
+            return obj
+
         ip_address_line_regex = kwargs.get("ip_address_line_regex")
         l3_interface_obj = kwargs.get("l3_interface_obj")
         primary = kwargs.get("primary", True)
 
         ip_address_regex = [ip_group for ip_group in ip_address_line_regex.groups() if ip_group]
+
+        # Check if the ip address has a CIDR - 10.1.1.1/24
+        if "/" in ip_address_regex[0]:
+            l3_interface_obj = process_ip_address_with_cidr(ip_address_regex[0], l3_interface_obj)
+            return l3_interface_obj
+
         ip_address_section = ip_address_regex[0].split()
         ip_address = ip_address_section[0].strip()
         mask = ip_address_section[1].strip()

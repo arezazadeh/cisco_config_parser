@@ -1,8 +1,13 @@
+import json
+
 from .l3_interface_separator import L3InterfaceSeparator
 from .l3_interface_obj import L3Interface
 from .l3_section_parser import _L3SectionParser
 from cisco_config_parser.parser_regex.regex import *
 from dataclasses import dataclass
+import re, ipaddress
+
+
 
 
 
@@ -65,6 +70,7 @@ class L3InterfaceParser:
             if ip_address_regex:
                 l3_intf_cls = _L3SectionParser._parse_ip_address_line(**ip_address_kwargs)
 
+
             if sec_ip_address_regex:
                 # set the primary flag to False to indicate that the ip address is a secondary ip address
                 ip_address_kwargs["primary"] = False
@@ -102,5 +108,26 @@ class L3InterfaceParser:
         return l3_intf_objects
 
 
+    def _fetch_subnet_and_usage(self, include_subnet_count=False):
+        """
+        Fetch the subnet usage from the config file
+        return: dictionary of subnet usage
+        """
 
+        subnet_usage = {}
+        subnet_count = {}
+        l3_interfaces = self._fetch_l3_interfaces()
+        for i in l3_interfaces:
+            if i.subnet:
+                cidr = str(ipaddress.IPv4Network(i.subnet, strict=False).prefixlen)
+                subnet_usage[i.name] = i.subnet
+                if subnet_count.get(f"/{cidr}"):
+                    subnet_count[f"/{cidr}"] += 1
+                else:
+                    subnet_count[f"/{cidr}"] = 1
+
+        if include_subnet_count:
+            subnet_usage["subnet_count"] = subnet_count
+
+        return subnet_usage
 

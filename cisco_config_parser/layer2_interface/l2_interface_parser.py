@@ -26,9 +26,9 @@ class L2InterfaceParser:
         Fetch the L2 interfaces from the config file
         return: list of L2AccessInterface objects
         """
-
         l2_intf = L2InterfaceSeparator(self.content)
         l2_access_interfaces = l2_intf.find_all_access_interfaces()
+
         l2_access_intf_objects = []
 
         for l2_access_interface in l2_access_interfaces:

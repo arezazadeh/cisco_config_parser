@@ -53,3 +53,5 @@ class GlobalParser:
             vlan_objects.append(vlan_obj)
 
         return vlan_objects
+
+
