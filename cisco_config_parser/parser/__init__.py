@@ -32,6 +32,15 @@ class ConfigParser(Parser):
         return self._get_eigrp_config(return_json=return_json)
 
 
+    def get_bgp_config(self, return_json=False):
+        """
+        Get the eigrp configuration from the config file
+        :return: list of eigrp objects or json
+        """
+        return self._get_bgp_config(return_json=return_json)
+
+
+
     def get_vlan_info(self):
         """
         Get the vlan information from the config file

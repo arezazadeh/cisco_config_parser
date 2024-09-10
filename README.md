@@ -16,7 +16,11 @@ pip install cisco-config-parser
 ## Classes in this library
 
 ```python
-IOSRouteParser
+IOSStaticRouteConfig
+IOSOSPFConfig
+IOSEIGRPConfig
+IOSBGPConfig
+IOSBGPConfig
 L3InterfaceParser
 L2InterfaceParser
 ParentChildParser
@@ -28,7 +32,7 @@ there more Classes are being built, and will be released in the upcoming version
 ```python
 from cisco_config_parser.helper import helper 
 
-helper = helper.IOSRouteParser()
+helper = helper.IOSStaticRouteConfig()
 
 print(helper)
 ```
@@ -45,50 +49,8 @@ with open("show_run.txt", "r") as file_output:
 
 obj = ConfigParser(content)
 
-
-#
-##
-###
-#### Static Routes Example:
-###
-##
-#
-obj.get_static_routes()
-obj.get_static_routes(return_json=True)
-
-
-#
-##
-###
-#### OSPF Example:
-###
-##
-#
-ospf = obj.get_ospf_config(return_json=True)
-ospf = obj.get_ospf_config()
-for i in ospf:
-    print(i.children)
-    print(i.network)
-    print(i.no_passive_interface)
-
-#
-##
-###
-#### EIGRP Example:
-###
-##
-#
-eigrp = obj.get_eigrp_config(return_json=True)
-eigrp = obj.get_eigrp_config()
-for i in eigrp:
-    print(i.children)
-    print(i.network)
-    print(i.vrf_children) << returns a list of EIGRPVrfChildren objects
-    vrf_children = i.vrf_children
-    for vrf in vrf_children:
-        print(vrf.network)
-        print(vrf.children)
-
+obj.get_static_routes() << Returns a list of objects
+obj.get_static_routes(return_json=True) << Returns a list of dictionaries 
 
 ```
 
@@ -99,7 +61,7 @@ for i in eigrp:
 - able to set custom regex and create dynamic method 
 
 
-* Example: 
+* L3Interface Example: 
 
 ```python
 from cisco_config_parser import ConfigParser

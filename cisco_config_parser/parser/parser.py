@@ -2,7 +2,12 @@ from cisco_config_parser.layer3_interface import L3InterfaceParser
 from cisco_config_parser.layer2_interface import L2InterfaceParser
 from cisco_config_parser.parent_child import ParentChildParser
 from cisco_config_parser.global_search import GlobalParser
-from cisco_config_parser.routing_protocol.rtp_ios_parser import IOSRouteParser
+from cisco_config_parser.routing_protocol.ios.rtp_ospf import IOSOSPFConfig
+from cisco_config_parser.routing_protocol.ios.rtp_eigtp import IOSEIGRPConfig
+from cisco_config_parser.routing_protocol.ios.rtp_static import IOSStaticRouteConfig
+from cisco_config_parser.routing_protocol.ios.rtp_bgp import IOSBGPConfig
+
+
 from cisco_config_parser.parser_regex.regex import *
 
 
@@ -14,11 +19,10 @@ class Parser:
         self._l2_parser_obj = L2InterfaceParser(self._content)
         self._parent_child_parser_obj = ParentChildParser(self._content)
         self._global_parser_obj = GlobalParser(self._content)
-        self._routing_protocol_parser_obj = IOSRouteParser(self._content)
 
 
 
-    def determine_platform(self):
+    def determine_platform(self, TARGET_CLASS):
         """
         Determine the platform of the device
         IOS, NXOS, IOSXR
@@ -29,7 +33,7 @@ class Parser:
         """
 
         if IOS_PLATFORM_REGEX_1.search(self._content):
-            return IOSRouteParser
+            return TARGET_CLASS
 
         elif NXOS_PLATFORM_REGEX_1.search(self._content) or NXOS_PLATFORM_REGEX_2.search(self._content):
             return "NXOS"
@@ -57,12 +61,12 @@ class Parser:
             if user provides the platform, then use the platform to fetch the static routes
             """
             if "ios" in self._platform.lower():
-                return self._routing_protocol_parser_obj._fetch_static_route_config(return_json=return_json)
+                return IOSStaticRouteConfig(self._content)._fetch_static_route_config(return_json=return_json)
 
         """
         if platform is not provided, then use internal logic to determine the platform
         """
-        relevant_object = self.determine_platform()
+        relevant_object = self.determine_platform(IOSStaticRouteConfig)
         return relevant_object(self._content)._fetch_static_route_config(return_json=return_json)
 
 
@@ -76,12 +80,12 @@ class Parser:
             if user provides the platform, then use the platform to fetch the static routes
             """
             if "ios" in self._platform.lower():
-                return self._routing_protocol_parser_obj._fetch_ospf_config(return_json=return_json)
+                return IOSOSPFConfig(self._content)._fetch_ospf_config(return_json=return_json)
 
         """
         if platform is not provided, then use internal logic to determine the platform
         """
-        relevant_object = self.determine_platform()
+        relevant_object = self.determine_platform(IOSOSPFConfig)
         return relevant_object(self._content)._fetch_ospf_config(return_json=return_json)
 
 
@@ -96,13 +100,33 @@ class Parser:
             if user provides the platform, then use the platform to fetch the static routes
             """
             if "ios" in self._platform.lower():
-                return self._routing_protocol_parser_obj._fetch_eigrp_config(return_json=return_json)
+                return IOSEIGRPConfig(self._content)._fetch_eigrp_config(return_json=return_json)
 
         """
         if platform is not provided, then use internal logic to determine the platform
         """
-        relevant_object = self.determine_platform()
+        relevant_object = self.determine_platform(IOSEIGRPConfig)
         return relevant_object(self._content)._fetch_eigrp_config(return_json=return_json)
+
+
+    def _get_bgp_config(self, return_json=False):
+        """
+        Get the static routes from the config file
+        :return: list of static route objects
+        """
+        if self._platform:
+            """
+            if user provides the platform, then use the platform to fetch the static routes
+            """
+            if "ios" in self._platform.lower():
+                return IOSBGPConfig(self._content)._fetch_bgp_config(return_json=return_json)
+
+        """
+        if platform is not provided, then use internal logic to determine the platform
+        """
+        relevant_object = self.determine_platform(IOSBGPConfig)
+        return relevant_object(self._content)._fetch_bgp_config(return_json=return_json)
+
 
 
 

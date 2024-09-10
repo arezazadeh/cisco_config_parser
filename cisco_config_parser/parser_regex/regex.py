@@ -116,9 +116,11 @@ RTP_IOS_BGP_PG_RM_IN_REGEX = re.compile(r"\s+neighbor\s(.*)\sroute-map\s(\S+)\si
 RTP_IOS_BGP_PG_RM_OUT_REGEX = re.compile(r"\s+neighbor\s(.*)\sroute-map\s(\S+)\sout", flags=re.MULTILINE)
 RTP_IOS_BGP_PG_NEIGHBOR_REGEX = re.compile(r"\s+neighbor\s(\d+\.\d+\.\d+\.\d+)\speer-group(.*)", flags=re.MULTILINE)
 RTP_IOS_BGP_PG_NEIGHBOR_DESCR_REGEX = re.compile(r"\s+neighbor\s(\d+\.\d+\.\d+\.\d+)\sdescription(.*)", flags=re.MULTILINE)
-
-RTP_IOS_BGP_REDISTRIBUTE_RM_REGEX = re.compile(r"\s+redistribute\s(.*)\sroute-map\s(.*)", flags=re.MULTILINE)
 RTP_IOS_BGP_GLOBAL_IPV4_REGEX = re.compile(r"\s+address-family\sipv4$", flags=re.MULTILINE)
+
+RTP_IOS_BGP_REDISTRIBUTE_REGEX = re.compile(r"\s+(redistribute\s.*)", flags=re.MULTILINE)
+RTP_IOS_BGP_REDISTRIBUTE_W_RM_REGEX = re.compile(r"redistribute\s(\S+\s\S+|\S+)\s+route-map(.*)", flags=re.MULTILINE)
+RTP_IOS_BGP_REDISTRIBUTE_WO_RM_REGEX = re.compile(r"redistribute\s(\S+\s\S+|\S+)$", flags=re.MULTILINE)
 
 
 

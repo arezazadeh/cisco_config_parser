@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 
 
@@ -74,14 +75,7 @@ class BGPVrfChildren:
     network: list = None
     peer_group: list = None
     neighbors: list = None
-    remote_as: list = None
-    description: list = None
-    update_source: list = None
-    rm_inbound: list = None
-    rm_outbound: list = None
     redistribute: list = None
-    redistribute_rm: list = None
-    vrf_children: list = None
     children: list = None
 
     def __post_init__(self):
@@ -91,24 +85,25 @@ class BGPVrfChildren:
         if self.children is None:
             self.children = []
 
+        if self.redistribute is None:
+            self.redistribute = []
+
+    def get_dict(self):
+        # Recursively turn the instance into a dictionary
+        return self.__dict__
+
 
 @dataclass
 class BGPConfig:
-    as_number: str = None
     router_id: str = None
+    vrf_list: list = None
     vrf: str = "Global"
     network: list = None
     peer_group: list = None
-    neighbor: list = None
-    remote_as: list = None
-    description: list = None
-    update_source: list = None
-    rm_inbound: list = None
-    rm_outbound: list = None
+    neighbors: list = None
     redistribute: list = None
-    redistribute_rm: list = None
-    vrf_children: object = None
     children: list = None
+    vrf_children: object = None
 
     def __post_init__(self):
         if self.vrf_children is None:
@@ -116,3 +111,17 @@ class BGPConfig:
 
         if self.peer_group is None:
             self.peer_group = []
+
+        if self.vrf_list is None:
+            self.vrf_list = []
+
+        if self.redistribute is None:
+            self.redistribute = []
+
+    def get_dict(self):
+        # Recursively turn the instance into a dictionary
+        parent = self.__dict__.copy()
+        parent["vrf_children"] = [child.get_dict() for child in self.vrf_children]
+        return parent
+
+

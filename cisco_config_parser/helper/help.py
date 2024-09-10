@@ -1,8 +1,8 @@
 
 
-RTP_IOS_HELP = """
+RTP_IOS_STATIC_HELP = """
 
-Example Usage:
+Example Usage For Static Routes:
 ====================================================================================================
 
 with open("show_run.txt", "r") as file_output:
@@ -10,26 +10,20 @@ with open("show_run.txt", "r") as file_output:
 
 
 obj = ConfigParser(content)
-
-
-#
-##
-###
-#### Static Routes Example:
-###
-##
-#
 obj.get_static_routes()
 obj.get_static_routes(return_json=True)
+"""
 
 
-#
-##
-###
-#### OSPF Example:
-###
-##
-#
+RTP_IOS_OSPF_HELP = """
+Example Usage For OSPF Routes:
+====================================================================================================
+
+with open("show_run.txt", "r") as file_output:
+    content = file_output.read()
+
+
+obj = ConfigParser(content)
 ospf = obj.get_ospf_config(return_json=True)
 ospf = obj.get_ospf_config()
 for i in ospf:
@@ -37,13 +31,16 @@ for i in ospf:
     print(i.network)
     print(i.no_passive_interface)
 
-#
-##
-###
-#### EIGRP Example:
-###
-##
-#
+"""
+RTP_IOS_EIGRP_HELP = """
+Example Usage For EIGRP Routes:
+====================================================================================================
+
+with open("show_run.txt", "r") as file_output:
+    content = file_output.read()
+
+
+obj = ConfigParser(content)
 eigrp = obj.get_eigrp_config(return_json=True)
 eigrp = obj.get_eigrp_config()
 for i in eigrp:
@@ -55,6 +52,30 @@ for i in eigrp:
         print(vrf.network)
         print(vrf.children)
 """
+
+
+RTP_IOS_BGP_HELP = """
+Example Usage For Static Routes:
+====================================================================================================
+
+with open("show_run.txt", "r") as file_output:
+    content = file_output.read()
+
+
+obj = ConfigParser(content)
+
+bgp = obj.get_bgp_config(return_json=True)
+bgp = obj.get_bgp_config()
+for i in bgp:
+    print(i.children)
+    print(i.network)
+    print(i.vrf_children) << returns a list of BGPVrfChildren objects
+    vrf_children = i.vrf_children
+    for vrf in vrf_children:
+        print(vrf.network)
+        print(vrf.children)
+"""
+
 PARENT_CHILD_HELP = """
 Example Usage:
 ====================================================================================================

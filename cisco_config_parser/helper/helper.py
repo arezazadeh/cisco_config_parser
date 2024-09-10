@@ -1,10 +1,22 @@
 from .help import *
 
 
-class IOSRouteParser:
+class IOSStaticRouteConfig:
     def __repr__(self):
-        return RTP_IOS_HELP
+        return RTP_IOS_STATIC_HELP
 
+class IOSOSPFConfig:
+    def __repr__(self):
+        return RTP_IOS_OSPF_HELP
+
+
+class IOSEIGRPConfig:
+    def __repr__(self):
+        return RTP_IOS_EIGRP_HELP
+
+class IOSBGPConfig:
+    def __repr__(self):
+        return RTP_IOS_BGP_HELP
 
 
 class ParentChild:
