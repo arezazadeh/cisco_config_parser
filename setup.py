@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '2.2'
+VERSION = '2.2.1'
 PACKAGE_NAME = 'cisco_config_parser'
 AUTHOR = 'Ahmad Rezazadeh'
 AUTHOR_EMAIL = 'ahmad@klevernet.io'
@@ -11,7 +11,7 @@ AUTHOR_EMAIL = 'ahmad@klevernet.io'
 URL = 'https://github.com/arezazadeh/cisco_config_parser'
 
 LICENSE = 'MIT License'
-DESCRIPTION = 'This Package Will Parse Cisco IOS, IOS-XE, IOS-XR and NXOS Configuration File.'
+DESCRIPTION = 'This library is used for Network Automation involving Cisco Routers and Switch. It will parse Cisco IOS, IOS-XE, IOS-XR, and NXOS configuration file into objects and/or json format'
 LONG_DESCRIPTION = (HERE / "README.md").read_text()
 LONG_DESC_TYPE = "text/markdown"
 

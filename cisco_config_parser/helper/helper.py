@@ -14,9 +14,12 @@ class ParentChild:
 
 class L3Interface:
     def __repr__(self):
-        return "L3 Interface Usage"
+        return LAYER3_INTERFACE_HELP
 
 
+class L2Interface:
+    def __repr__(self):
+        return LAYER2_INTERFACE_HELP
 
 
 

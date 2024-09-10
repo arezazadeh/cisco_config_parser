@@ -71,3 +71,52 @@ for i in parent_child:
     print(i.children)
 
 """
+LAYER3_INTERFACE_HELP = """
+Example Usage:
+====================================================================================================
+with open("show_run.txt", "r") as file_output:
+    content = file_output.read()
+
+obj = ConfigParser(content)
+
+# returns dictionary of layer3 interfaces
+l3_intfs = obj.get_l3_interface_details()
+
+l3_intfs = obj.get_l3_interface()
+
+for intf in l3_intfs:
+    print(intf.name)
+    print(intf.ip_address)
+    print(intf.children)
+
+
+# you can also search for specific entry under layer3 interface with custom regex
+l3_intfs = obj.get_l3_interface(ip_pim="(ip\spim\s.*)", load_interval="(load\sinterval.*)")
+
+
+for intf in l3_intfs:
+    print(intf.name)
+    print(intf.ip_address)
+    print(intf.ip_pim) <<< dynamically creates an attribute based on the custom regex
+    print(intf.load_interval) <<< dynamically creates an attribute based on the custom regex
+
+"""
+
+LAYER2_INTERFACE_HELP = """
+Example Usage:
+====================================================================================================
+with open("show_run.txt", "r") as file_output:
+    content = file_output.read()
+
+obj = ConfigParser(content)
+
+# returns dictionary of layer2 interfaces
+l2_intfs = obj.get_l2_interface_details()
+
+l2_intfs = obj.get_l2_interface()
+
+for intf in l2_intfs:
+    print(intf.name)
+    print(intf.children)
+
+"""
