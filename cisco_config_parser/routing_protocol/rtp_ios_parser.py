@@ -5,7 +5,6 @@ from cisco_config_parser.routing_protocol.rtp_ios_obj import (
     EIGRPConfig,
     EIGRPVrfChildren,
 )
-from cisco_config_parser.helper.help import RTP_IOS_HELP
 from cisco_config_parser.parser_regex.regex import *
 from dataclasses import dataclass
 from cisco_config_parser.layer3_interface import L3InterfaceParser
@@ -432,7 +431,11 @@ class IOSRouteParser:
 
 
     def _fetch_bgp_config(self):
+        bgp_config_section = IOSRoutingProtocolSeparator(self.content).find_bgp_config()
+        print(bgp_config_section)
+
         pass
+
 
 
 

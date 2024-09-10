@@ -123,6 +123,19 @@ class IOSRoutingProtocolSeparator(Separator):
         return eigrp_section
 
 
+    def find_bgp_config(self):
+        """
+        Find all the BGP configurations in the config file
+        :return: list of BGP configurations
+        """
+        self.find_all_routing_protocols()
+        bgp_section = []
+        for i in self._routing_protocol_sections:
+            if self._is_bgp_section(i):
+                bgp_section.append(i)
+
+        return bgp_section
+
 
     def find_all_routing_protocols(self):
         self._find_routing_protocols()

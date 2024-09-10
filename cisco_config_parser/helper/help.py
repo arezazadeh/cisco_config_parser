@@ -101,7 +101,6 @@ for intf in l3_intfs:
     print(intf.load_interval) <<< dynamically creates an attribute based on the custom regex
 
 """
-
 LAYER2_INTERFACE_HELP = """
 Example Usage:
 ====================================================================================================
