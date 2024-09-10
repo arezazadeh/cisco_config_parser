@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 .DS_Store
+cisco_config_parser/testing.py
 __pycache__/
 *.py[cod]
 *$py.class

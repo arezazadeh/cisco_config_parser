@@ -66,3 +66,53 @@ class EIGRPConfig:
         if self.vrf_children is None:
             self.vrf_children = EIGRPVrfChildren()
 
+
+
+@dataclass
+class BGPVrfChildren:
+    vrf: str = None
+    network: list = None
+    peer_group: list = None
+    neighbors: list = None
+    remote_as: list = None
+    description: list = None
+    update_source: list = None
+    rm_inbound: list = None
+    rm_outbound: list = None
+    redistribute: list = None
+    redistribute_rm: list = None
+    vrf_children: list = None
+    children: list = None
+
+    def __post_init__(self):
+        if self.neighbors is None:
+            self.neighbors = []
+
+        if self.children is None:
+            self.children = []
+
+
+@dataclass
+class BGPConfig:
+    as_number: str = None
+    router_id: str = None
+    vrf: str = "Global"
+    network: list = None
+    peer_group: list = None
+    neighbor: list = None
+    remote_as: list = None
+    description: list = None
+    update_source: list = None
+    rm_inbound: list = None
+    rm_outbound: list = None
+    redistribute: list = None
+    redistribute_rm: list = None
+    vrf_children: object = None
+    children: list = None
+
+    def __post_init__(self):
+        if self.vrf_children is None:
+            self.vrf_children = BGPVrfChildren()
+
+        if self.peer_group is None:
+            self.peer_group = []

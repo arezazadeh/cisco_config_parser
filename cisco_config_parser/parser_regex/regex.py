@@ -61,8 +61,6 @@ VLAN_REGEX = re.compile(r"^vlan\s([0-9]+)", flags=re.MULTILINE)
 
 # Routing Protocol
 RTP_REGEX = re.compile(r"^router\s(.*)", flags=re.MULTILINE)
-
-RTP_BGP_REGEX = re.compile(r"^router bgp", flags=re.MULTILINE)
 RTP_ISIS_REGEX = re.compile(r"^router isis", flags=re.MULTILINE)
 RTP_RIP_REGEX = re.compile(r"^router rip", flags=re.MULTILINE)
 
@@ -98,6 +96,29 @@ RTP_IOS_OSPF_INTERFACES_PROCESS_ID_REGEX = re.compile(r"\s+ip\sospf\s(\d+)\s+are
 RTP_EIGRP_REGEX = re.compile(r"^router eigrp", flags=re.MULTILINE)
 RTP_IOS_EIGRP_VRF_REGEX = re.compile(r"\s+address-family\sipv4\svrf\s(\S+)", flags=re.MULTILINE)
 RTP_IOS_EIGRP_NETWORK_REGEX = re.compile(r"\s+network\s(\d+\.\d+\.\d+\.\d+)\s(\d+\.\d+\.\d+\.\d+)", flags=re.MULTILINE)
+
+# IOS ROUTING PROTOCOL - BGP
+RTP_BGP_REGEX = re.compile(r"^router bgp", flags=re.MULTILINE)
+RTP_BGP_ROUTER_ID_REGEX = re.compile(r"\s+bgp\srouter-id\s(\d+\.\d+\.\d+\.\d+)", flags=re.MULTILINE)
+RTP_IOS_BGP_VRF_REGEX = re.compile(r"\s+address-family\sipv4\svrf\s(\S+)", flags=re.MULTILINE)
+RTP_IOS_BGP_NETWORK_REGEX = re.compile(r"\s+network\s(\d+\.\d+\.\d+\.\d+)\smask\s(\d+\.\d+\.\d+\.\d+)", flags=re.MULTILINE)
+RTP_IOS_BGP_NEIGHBOR_IP_REGEX = re.compile(r"\s+neighbor\s(\d+\.\d+\.\d+\.\d+)\s(.*)", flags=re.MULTILINE)
+RTP_IOS_BGP_NEIGHBOR_REMOTE_AS_REGEX = re.compile(r"\s+neighbor\s(\d+\.\d+\.\d+\.\d+)\sremote-as\s(\d+)", flags=re.MULTILINE)
+RTP_IOS_BGP_NEIGHBOR_DESCR_REGEX = re.compile(r"\s+neighbor\s(\d+\.\d+\.\d+\.\d+)\sdescription\s(.*)", flags=re.MULTILINE)
+RTP_IOS_BGP_NEIGHBOR_UPDATE_SRC_REGEX = re.compile(r"\s+neighbor\s(\d+\.\d+\.\d+\.\d+)\supdate-source\s(.*)", flags=re.MULTILINE)
+RTP_IOS_BGP_NEIGHBOR_RM_INBOUND_REGEX = re.compile(r"\s+neighbor\s(\d+\.\d+\.\d+\.\d+)\sroute-map\s(.*)\sin", flags=re.MULTILINE)
+RTP_IOS_BGP_NEIGHBOR_RM_OUTBOUND_REGEX = re.compile(r"\s+neighbor\s(\d+\.\d+\.\d+\.\d+)\sroute-map\s(.*)\sout", flags=re.MULTILINE)
+
+RTP_IOS_BGP_PEER_GROUP_REGEX = re.compile(r"\s+neighbor\s(\S+)\speer-group$", flags=re.MULTILINE)
+RTP_IOS_BGP_PG_REMOTE_AS_REGEX = re.compile(r"\s+neighbor\s(.*)\sremote-as\s(\S+)", flags=re.MULTILINE)
+RTP_IOS_BGP_PG_UPDATE_SRC_REGEX = re.compile(r"\s+neighbor\s(.*)\supdate-source\s(\S+)", flags=re.MULTILINE)
+RTP_IOS_BGP_PG_RM_IN_REGEX = re.compile(r"\s+neighbor\s(.*)\sroute-map\s(\S+)\sin", flags=re.MULTILINE)
+RTP_IOS_BGP_PG_RM_OUT_REGEX = re.compile(r"\s+neighbor\s(.*)\sroute-map\s(\S+)\sout", flags=re.MULTILINE)
+RTP_IOS_BGP_PG_NEIGHBOR_REGEX = re.compile(r"\s+neighbor\s(\d+\.\d+\.\d+\.\d+)\speer-group(.*)", flags=re.MULTILINE)
+RTP_IOS_BGP_PG_NEIGHBOR_DESCR_REGEX = re.compile(r"\s+neighbor\s(\d+\.\d+\.\d+\.\d+)\sdescription(.*)", flags=re.MULTILINE)
+
+RTP_IOS_BGP_REDISTRIBUTE_RM_REGEX = re.compile(r"\s+redistribute\s(.*)\sroute-map\s(.*)", flags=re.MULTILINE)
+RTP_IOS_BGP_GLOBAL_IPV4_REGEX = re.compile(r"\s+address-family\sipv4$", flags=re.MULTILINE)
 
 
 
