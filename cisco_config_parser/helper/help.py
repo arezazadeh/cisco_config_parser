@@ -105,7 +105,16 @@ with open("show_run.txt", "r") as file_output:
 
 obj = ConfigParser(content)
 
-parent_child = obj.get_parent_child(custom_regex="(^snmp.*)|(^aaa.*)")
+# This will only return the parent and its child based on the custom regex
+parent_child = obj.get_parent_child(parent_regex="^aaa.*", child_regex="^server.*")
+
+>> output:
+    aaa group server tacacs+ TACACS_GROUP
+    server-private 1.1.1.1 key 7 1234567890
+
+
+# This will only return the parent and its child based on the custom regex
+parent_child = obj.get_parent_child(parent_regex="(^snmp.*)|(^aaa.*)")
 
 for i in parent_child:
     print(i.parent)
