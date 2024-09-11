@@ -10,12 +10,17 @@ with open("show_run.txt", "r") as file_output:
 
 
 obj = ConfigParser(content)
-obj.get_static_routes()
+
+# Return it as a json object
 obj.get_static_routes(return_json=True)
+
+# or as a list of StaticRoute objects
+obj.get_static_routes()
 """
 
 
 RTP_IOS_OSPF_HELP = """
+
 Example Usage For OSPF Routes:
 ====================================================================================================
 
@@ -24,7 +29,11 @@ with open("show_run.txt", "r") as file_output:
 
 
 obj = ConfigParser(content)
+
+# Return it as a json object
 ospf = obj.get_ospf_config(return_json=True)
+
+# or as a list of OSPFConfig objects
 ospf = obj.get_ospf_config()
 for i in ospf:
     print(i.children)
@@ -33,6 +42,7 @@ for i in ospf:
 
 """
 RTP_IOS_EIGRP_HELP = """
+
 Example Usage For EIGRP Routes:
 ====================================================================================================
 
@@ -41,7 +51,11 @@ with open("show_run.txt", "r") as file_output:
 
 
 obj = ConfigParser(content)
+
+# Return it as a json object
 eigrp = obj.get_eigrp_config(return_json=True)
+
+# or as a list of EIGRPConfig objects
 eigrp = obj.get_eigrp_config()
 for i in eigrp:
     print(i.children)
@@ -55,7 +69,8 @@ for i in eigrp:
 
 
 RTP_IOS_BGP_HELP = """
-Example Usage For Static Routes:
+
+Example Usage For BGP Routes:
 ====================================================================================================
 
 with open("show_run.txt", "r") as file_output:
@@ -64,7 +79,11 @@ with open("show_run.txt", "r") as file_output:
 
 obj = ConfigParser(content)
 
+# Return it as a json object
 bgp = obj.get_bgp_config(return_json=True)
+
+
+# or as a list of BGPConfig objects
 bgp = obj.get_bgp_config()
 for i in bgp:
     print(i.children)
@@ -77,7 +96,8 @@ for i in bgp:
 """
 
 PARENT_CHILD_HELP = """
-Example Usage:
+
+Example Usage For Parent Child:
 ====================================================================================================
 
 with open("show_run.txt", "r") as file_output:
@@ -93,7 +113,8 @@ for i in parent_child:
 
 """
 LAYER3_INTERFACE_HELP = """
-Example Usage:
+
+Example Usage For Layer3 Interfaces:
 ====================================================================================================
 with open("show_run.txt", "r") as file_output:
     content = file_output.read()
@@ -123,7 +144,8 @@ for intf in l3_intfs:
 
 """
 LAYER2_INTERFACE_HELP = """
-Example Usage:
+
+Example Usage For Layer2 Interfaces:
 ====================================================================================================
 with open("show_run.txt", "r") as file_output:
     content = file_output.read()
