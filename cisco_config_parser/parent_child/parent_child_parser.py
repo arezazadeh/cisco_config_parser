@@ -21,6 +21,7 @@ class ParentChildParser:
         return: list of ParentChild objects
         """
         custom_regex = kwargs.get("custom_regex", None)
+        return_json = kwargs.get("return_json", False)
         if not custom_regex:
             raise ValueError("custom_regex is required")
 
@@ -40,6 +41,9 @@ class ParentChildParser:
                     child_regex.pop(0)
                     parent_child_obj.children = [line.strip() for line in child_regex if line] if child_regex else ""
                     parent_child_obj_list.append(parent_child_obj)
+
+        if return_json:
+            return [obj.__dict__ for obj in parent_child_obj_list]
 
         return parent_child_obj_list
 
