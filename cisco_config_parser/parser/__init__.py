@@ -58,8 +58,14 @@ class ConfigParser(Parser):
     def get_parent_child(self, **kwargs):
         """
         Get parent child from the config file
+        :param kwargs: parent_regex, child_regex, return_json
         :return: list of parent child objects
         """
+        parent_regex = kwargs.get("parent_regex", None)
+        child_regex = kwargs.get("child_regex", None)
+        return_json = kwargs.get("return_json", False)
+        kwargs = {"parent_regex": parent_regex, "child_regex": child_regex, "return_json": return_json}
+
         return self._get_parent_child(**kwargs)
 
 
@@ -73,9 +79,15 @@ class ConfigParser(Parser):
 
     def get_l3_interfaces(self, **kwargs):
         """
-        Get L3 interfaces from the config file
+        -Description: \n
+        Get L3 interfaces from the config file\n
+        you can pass custom regex with custom name\n
+        i.e. obj.get_l3_interfaces(ip_pim="ip pim.*")\n
+        ,or you can pass return_json=True to get the output in json format
+        :param: custom regex, return_json
         :return: list of L3 interface objects
         """
+
         return self._get_l3_interfaces(**kwargs)
 
     def get_l3_interface_details(self):

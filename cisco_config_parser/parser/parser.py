@@ -148,6 +148,8 @@ class Parser:
     def _get_parent_child(self, **kwargs):
         """
         Get parent child from the config file
+        :param kwargs: parent_regex, child_regex
+        :param kwargs: return_json: bool - Default False
         :return: list of parent child objects
         """
         return self._parent_child_parser_obj._fetch_parent_child(**kwargs)
