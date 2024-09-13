@@ -1,3 +1,3 @@
 
-from .parser import ConfigParser
-from .parser import ConfigParserOld
+from .parser import ConfigParser, ConfigParserOld
+

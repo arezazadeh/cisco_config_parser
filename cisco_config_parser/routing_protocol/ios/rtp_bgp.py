@@ -1,7 +1,7 @@
 # Description: This file contains the class to parse BGP configuration from Cisco IOS configuration files.
 
 from cisco_config_parser.routing_protocol.ios.rtp_ospf import IOSRoutingProtocolSeparator
-from cisco_config_parser.parser_regex.regex import *
+from cisco_config_parser.parser_regex import *
 from .rtp_ios_rtp_obj import BGPConfig, BGPVrfChildren
 from cisco_config_parser.routing_protocol.utils.utils import *
 from dataclasses import dataclass

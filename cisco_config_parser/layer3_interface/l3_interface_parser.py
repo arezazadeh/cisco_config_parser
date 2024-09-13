@@ -1,9 +1,9 @@
 import json
-
+from cisco_config_parser.parser_regex.common_regex import *
 from .l3_interface_separator import L3InterfaceSeparator
 from .l3_interface_obj import L3Interface
 from .l3_section_parser import _L3SectionParser
-from cisco_config_parser.parser_regex.regex import *
+from cisco_config_parser.parser_regex import *
 from dataclasses import dataclass
 import re, ipaddress
 
@@ -32,6 +32,7 @@ class L3InterfaceParser:
         return: list of L3Interface objects
         """
 
+        return_json = kwargs.get("return_json", False)
 
         l3_intf = L3InterfaceSeparator(self.content)
         l3_interfaces = l3_intf.find_all_l3_interfaces()
@@ -92,6 +93,8 @@ class L3InterfaceParser:
             # if there are custom kwargs, search for the custom regex in the l3_interface section
             # if the regex is found, parse the line and store the value in the l3_intf_cls object
             if kwargs:
+                if "return_json" in kwargs:
+                    kwargs.pop("return_json")
                 for k, v in kwargs.items():
                     custom_field_regex = re.search(v, l3_interface, flags=re.MULTILINE)
                     custom_regex_kwargs = {
@@ -104,6 +107,9 @@ class L3InterfaceParser:
 
             # append the l3_intf_cls object to the l3_intf_objects list
             l3_intf_objects.append(l3_intf_cls)
+
+        if return_json:
+            return [l3_intf.__dict__.copy() for l3_intf in l3_intf_objects]
 
         return l3_intf_objects
 

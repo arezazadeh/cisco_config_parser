@@ -2,13 +2,13 @@ from cisco_config_parser.layer3_interface import L3InterfaceParser
 from cisco_config_parser.layer2_interface import L2InterfaceParser
 from cisco_config_parser.parent_child import ParentChildParser
 from cisco_config_parser.global_search import GlobalParser
-from cisco_config_parser.routing_protocol.ios.rtp_ospf import IOSOSPFConfig
-from cisco_config_parser.routing_protocol.ios.rtp_eigtp import IOSEIGRPConfig
-from cisco_config_parser.routing_protocol.ios.rtp_static import IOSStaticRouteConfig
-from cisco_config_parser.routing_protocol.ios.rtp_bgp import IOSBGPConfig
+# from cisco_config_parser.routing_protocol.ios.rtp_ospf import IOSOSPFConfig
+# from cisco_config_parser.routing_protocol.ios.rtp_eigtp import IOSEIGRPConfig
+# from cisco_config_parser.routing_protocol.ios.rtp_static import IOSStaticRouteConfig
+# from cisco_config_parser.routing_protocol.ios.rtp_bgp import IOSBGPConfig
+from cisco_config_parser.routing_protocol import *
 
-
-from cisco_config_parser.parser_regex.regex import *
+from cisco_config_parser.parser_regex.ios_regex import *
 
 
 class Parser:

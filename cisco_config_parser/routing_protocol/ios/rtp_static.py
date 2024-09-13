@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from cisco_config_parser.parser_regex.regex import *
-from cisco_config_parser.routing_protocol.utils.rtp_separator import IOSRoutingProtocolSeparator
+from cisco_config_parser.parser_regex import *
+from cisco_config_parser.routing_protocol.utils import *
 from cisco_config_parser.routing_protocol.ios.rtp_ios_rtp_obj import StaticRoute
 
 
@@ -102,6 +102,6 @@ class IOSStaticRouteConfig:
             static_route_objects.append(static_route_obj)
 
         if return_json:
-            return [obj.__dict__ for obj in static_route_objects]
+            return [obj.__dict__.copy() for obj in static_route_objects]
 
         return static_route_objects

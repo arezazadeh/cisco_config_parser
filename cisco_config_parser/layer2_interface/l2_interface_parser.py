@@ -1,7 +1,7 @@
 from .l2_interface_separator import L2InterfaceSeparator
 from .l2_interface_obj import L2TrunkInterface, L2AccessInterface
 from .l2_section_parser import _L2AccessSectionParser, _L2TrunkSectionParser
-from cisco_config_parser.parser_regex.regex import *
+from cisco_config_parser.parser_regex import *
 from dataclasses import dataclass
 
 
@@ -26,6 +26,8 @@ class L2InterfaceParser:
         Fetch the L2 interfaces from the config file
         return: list of L2AccessInterface objects
         """
+        return_json = kwargs.get("return_json", False)
+
         l2_intf = L2InterfaceSeparator(self.content)
         l2_access_interfaces = l2_intf.find_all_access_interfaces()
 
@@ -74,6 +76,8 @@ class L2InterfaceParser:
             # if there are custom kwargs, search for the custom regex in the l2_access_interface section
             # if the regex is found, parse the line and store the value in the l2_access_intf_cls object
             if kwargs:
+                if "return_json" in kwargs:
+                    kwargs.pop("return_json")
                 for k, v in kwargs.items():
                     custom_field_regex = re.search(v, l2_access_interface, flags=re.MULTILINE)
                     custom_regex_kwargs = {
@@ -85,13 +89,20 @@ class L2InterfaceParser:
 
             l2_access_intf_objects.append(l2_access_intf_cls)
 
+        if return_json:
+            return [l2_intf.__dict__.copy() for l2_intf in l2_access_intf_objects]
+
         return l2_access_intf_objects
 
     def _fetch_l2_trunk_interfaces(self, **kwargs):
         """
         Fetch the L2 interfaces from the config file
+        :param kwargs: dict of custom regex
+        :param kwargs: return_json: bool: Default False - return the data in json format
         return: list of L2TrunkInterface objects
         """
+
+        return_json = kwargs.get("return_json", False)
 
         l2_intf = L2InterfaceSeparator(self.content)
         l2_trunk_interfaces = l2_intf.find_all_trunk_interfaces()

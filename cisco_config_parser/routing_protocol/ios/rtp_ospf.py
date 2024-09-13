@@ -1,7 +1,8 @@
-from cisco_config_parser.routing_protocol.utils.rtp_separator import IOSRoutingProtocolSeparator
+from cisco_config_parser.routing_protocol.utils import *
 from cisco_config_parser.routing_protocol.ios.rtp_ios_rtp_obj import *
-from cisco_config_parser.parser_regex.regex import *
+from cisco_config_parser.parser_regex import *
 from dataclasses import dataclass
+
 from cisco_config_parser.layer3_interface import L3InterfaceParser
 
 

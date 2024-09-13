@@ -1,6 +1,6 @@
 from .global_separator import GlobalSeparator
 from dataclasses import dataclass
-from cisco_config_parser.parser_regex.regex import *
+from cisco_config_parser.parser_regex import *
 from .global_obj import BannerObj, VLANObj
 
 

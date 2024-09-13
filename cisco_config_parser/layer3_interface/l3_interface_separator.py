@@ -1,5 +1,5 @@
 from cisco_config_parser.separator import Separator
-from cisco_config_parser.parser_regex.regex import *
+from cisco_config_parser.parser_regex import *
 
 
 class L3InterfaceSeparator(Separator):

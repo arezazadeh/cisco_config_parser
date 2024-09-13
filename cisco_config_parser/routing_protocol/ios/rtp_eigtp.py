@@ -2,11 +2,8 @@
 
 
 from dataclasses import dataclass
-from .rtp_ospf import IOSRoutingProtocolSeparator
-from cisco_config_parser.parser_regex.regex import *
-from cisco_config_parser.routing_protocol.utils import *
 from .rtp_ios_rtp_obj import EIGRPConfig, EIGRPVrfChildren
-
+from cisco_config_parser.routing_protocol.utils import *
 
 
 

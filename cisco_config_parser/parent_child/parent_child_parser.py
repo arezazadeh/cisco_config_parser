@@ -1,6 +1,6 @@
 import re
 from .parent_child_obj import ParentChild
-from cisco_config_parser.parser_regex.regex import SPLIT_ON_LINE
+from cisco_config_parser.parser_regex import *
 from .parent_child_separator import ParentChildSeparator
 from dataclasses import dataclass
 

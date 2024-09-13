@@ -1,4 +1,5 @@
-from cisco_config_parser.parser_regex.regex import *
+from cisco_config_parser.parser_regex import *
+
 from dataclasses import dataclass
 
 """
@@ -21,8 +22,6 @@ class Separator:
                 self._sections += parent_regex.group() + '\n'
             if children_regex:
                 self._sections += children_regex.group() + '\n'
-
-
 
 
 
