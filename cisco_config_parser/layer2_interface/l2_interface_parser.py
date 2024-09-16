@@ -161,6 +161,8 @@ class L2InterfaceParser:
             # if there are custom kwargs, search for the custom regex in the l2_access_interface section
             # if the regex is found, parse the line and store the value in the l2_access_intf_cls object
             if kwargs:
+                if "return_json" in kwargs:
+                    kwargs.pop("return_json")
                 for k, v in kwargs.items():
                     custom_field_regex = re.search(v, l2_trunk_interface, flags=re.MULTILINE)
                     custom_regex_kwargs = {
@@ -172,6 +174,8 @@ class L2InterfaceParser:
 
             l2_trunk_intf_objects.append(l2_trunk_intf_cls)
 
+        if return_json:
+            return [l2_intf.__dict__.copy() for l2_intf in l2_trunk_intf_objects]
         return l2_trunk_intf_objects
 
 

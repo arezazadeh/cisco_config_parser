@@ -15,39 +15,6 @@ class ParentChildParser:
     """
     content: str = None
 
-    def _fetch_parent_child_old(self, **kwargs):
-        """
-        Fetch the parent child from the config file
-        return: list of ParentChild objects
-        """
-        custom_regex = kwargs.get("custom_regex", None)
-        return_json = kwargs.get("return_json", False)
-        if not custom_regex:
-            raise ValueError("custom_regex is required")
-
-        custom_regex = re.compile(custom_regex, flags=re.MULTILINE)
-        parent_child = ParentChildSeparator(self.content)
-        sections = parent_child._get_separated_sections()
-
-        parent_child_obj_list = []
-
-        for section in sections:
-            parent_child_obj = ParentChild()
-            regex_result = re.match(custom_regex, section.strip())
-            if regex_result:
-                if section.strip().startswith(regex_result.group()):
-                    child_regex = SPLIT_ON_LINE.split(section.strip())
-                    parent_child_obj.parent = child_regex[0]
-                    child_regex.pop(0)
-                    parent_child_obj.children = [line.strip() for line in child_regex if line] if child_regex else ""
-                    parent_child_obj_list.append(parent_child_obj)
-
-        if return_json:
-            return [obj.__dict__ for obj in parent_child_obj_list]
-
-        return parent_child_obj_list
-
-
     def _fetch_parent_child(self, **kwargs):
         """
         Fetch the parent child from the config file

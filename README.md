@@ -1,10 +1,68 @@
 # Cisco Configuration Parser
 
-This library is used for Network Automation involving Cisco Routers and Switch. It will parse Cisco IOS, IOS-XE, IOS-XR, and NXOS configuration file into objects and/or json format
+## Overview
+The **Cisco Configuration Parser** is a Python library designed for network automation tasks, specifically focusing on parsing configuration files from Cisco routers and switches. It supports Cisco IOS, IOS-XE, IOS-XR, and NXOS platforms. This library allows you to convert running configuration files into structured Python objects or JSON/dictionary formats for easier analysis, modification, or automation.
 
-##  New Version 2.0 
+## Key Features
+
+### Platform Detection
+This library is designed to be **platform agnostic**, meaning it can automatically determine the Cisco platform based on the syntax of the configuration file. In cases where the platform cannot be determined automatically, you can manually specify the platform by passing `platform="IOS/XR/NXOS"` to the parser.
+
+### Flexible Data Handling
+The parser can convert configuration data into either Python objects or JSON/dictionary formats. You can control the format by passing the `return_json=True` flag to the relevant method. This flexibility allows you to integrate with a wide range of automation workflows and tools.
+
+### Configuration Hierarchy Recognition
+Cisco configurations often feature a mix of parent-child relationships and standalone entries. This library is adept at recognizing and parsing these patterns to capture both common and critical configuration attributes. For instance:
+
+- **Standalone Configuration Example:**
+```
+hostname switch01.net
+``` 
+
+- **Parent-Child Configuration Example:**
+
+```
+Vlan 100                <<<< Parent
+  name DATA_VLAN        <<<< Child
+```
+
+This library tries to captures the important and common attributes of the configurations for different sections and convert them to python objects or json/dict format. 
+
+Some of those configs are as follow:
+
+```
+- Hostname,
+- AAA, 
+- Interface,
+- VLAN, 
+- Interface (Layer2 and Layer3),
+- Access-list, 
+- Prefix-list, 
+- Prefix-set (IOS-XR)
+- Route-map, 
+- Route-policy (IOS-XR),
+- Static Routes,
+- Dynamic Routes
+    - RIP
+    - EIGRP
+    - OSPF
+    - IS-IS
+    - BGP
+
+- Line-vty 
+- Line-con
+- Banner
+```
+Above configuration sections are captured along with the most common attributes/children. and the rest of them are captured inside method `obj.children`. 
+
+### Parent/Child Regex Parsing Capabilities
+In addition to above default behavior or the library, you also have the option to pass your own regex to the `ConfigParser` as either `parent_regex=r"<custom_regex>", child_regex=r"<custom_regex>"` or only `parent_regex=r"<custom_regex>"`. 
+
+**Note:** If you pass both `parent_regex` and `child_regex`, the library attempt to search for the parent and the only child that you have searched for. If you would like to get all the children, then just pass the `parent_regex` to the class. I will have some example at the bottom this document. 
+
 
 ## Install the package
+This package is available on `pypi.org` you can install the package via `pip`.
 
 https://pypi.org/project/cisco-config-parser/
 
@@ -13,7 +71,7 @@ pip install cisco-config-parser
 ```
 
 
-## Classes in this library
+## Current Classes in this library
 
 ```python
 IOSStaticRouteConfig
@@ -25,9 +83,11 @@ L3InterfaceParser
 L2InterfaceParser
 ParentChildParser
 ```
-there more Classes are being built, and will be released in the upcoming versions. 
+
+There more Classes are being built, and will be released in the upcoming versions. 
 
 ## Get Example usage:
+A short documentation is embeded in the code base. you can view those example by importing `helper` and calling the class
 
 ```python
 from cisco_config_parser.helper import helper 
@@ -53,323 +113,331 @@ obj.get_static_routes() << Returns a list of objects
 obj.get_static_routes(return_json=True) << Returns a list of dictionaries 
 
 ```
+## Examples:
 
-### 1. Layer3 Interfaces:
-- added interface details - returns dict of all layer3 interfaces
-- methods are unified 
-- platform agnostic 
-- able to set custom regex and create dynamic method 
+### Loading the Running-Config File 
 
-
-* L3Interface Example: 
-
-```python
-from cisco_config_parser import ConfigParser
-
-l3_intf = ConfigParser(res)
-l3 = l3_intf.get_l3_interfaces(ip_pim="ip pim *",  ospf="ip ospf.*")
-
-for i in l3:
-    print(i.name)
-    print(i.ip_pim)
-    print(i.ospf)
 ```
-Output:
-```python
+>>> ios_file = "/Users/fileFolder/devFolder/config.txt"
+>>> with open(ios_file, "r") as f:
+        running_config = f.read()
+
+>>> from cisco_config_parser import ConfigParser
+>>> 
+>>> parser = ConfigParser(running_config)
+```
+
+
+### Layer3 Interface
+
+In layer-3 interface, the class attempts to capture all the important attributes of the interface, such as:
+
+- IPv4 Address
+- Subnet 
+- Subnet Mask
+- Secondary IPv4 Address
+- Secondary Subnet 
+- Secondary Subnet Mask 
+- HSRP or VRRP Config
+    - VIP 
+
+#### Subnet list and their Usages 
+
+One of the great feature in this library is it captures all the subnets that are being used in your Network Device along with their usage. 
+Also it tells you how many of each subnet masks are being used as well. I personaly use this feature when i need to automate DHCP/IPAM documentaion cleanup. 
+
+**Example below illustriates this feature:**
+
+```
+>>> subnet_usage = parser.get_subnet_and_usage(include_subnet_count=True)
+>>> print(json.dumps(subnet_usage, indent=4))
+
+{
+    "Loopback100": "10.241.17.8/32",
+    "Loopback200": "10.252.248.1/32",
+    "Vlan200": "10.252.182.0/23",
+    "Vlan300": "10.244.16.160/27",
+    "Vlan310": "10.241.101.80/28",
+    "Vlan400": "10.39.10.32/27",
+    "Vlan700": "172.31.81.0/25",
+    "Vlan1100": "10.242.12.0/26",
+    "Vlan1125": "10.241.8.0/27",
+    "Vlan1126": "10.241.8.32/27",
+    "Vlan1127": "10.241.8.64/27",
+    "subnet_count": {
+        "/32": 2,
+        "/23": 1,
+        "/27": 5,
+        "/28": 1,
+        "/25": 1,
+        "/26": 1,
+    }
+}
+```
+
+#### Layer3 Interfaces - List of Objects
+
+```
+>>> l3_interfaces = parser.get_l3_interfaces()
+>>>for l3 in l3_interfaces:
+        print(l3.name)
+        print(l3.ip_address, l3.subnet)
+        print("!")
+
+Loopback100
+10.241.17.8 10.241.17.8/32
+!
+Loopback200
+10.252.248.1 10.252.248.1/32
+!
+Loopback202
+10.245.0.199 10.245.0.199/32
+```
+#### Layer3 Interfaces - Json/Dict Format
+
+```
+>>> l3_interfaces = parser.get_l3_interfaces(return_json=True)
+>>> print(json.dumps(l3_interfaces, indent=4))
+[
+    {
+        "name": "Loopback100",
+        "description": "SWITCH01-SA01 Loopback IP",
+        "ip_address": "10.241.17.8",
+        "mask": "255.255.255.255",
+        "subnet": "10.241.17.8/32",
+        "helpers": null,
+        "sec_ip_address": null,
+        "sec_mask": null,
+        "sec_subnet": null,
+        "vrf": "mgt100",
+        "state": null,
+        "vip": null,
+        "children": [
+            "description SWITCH01-SA01 Loopback IP",
+            "ip vrf forwarding mgt100",
+            "ip address 10.241.17.8 255.255.255.255",
+            "ip pim sparse-mode",
+            "ip ospf 100 area 0"
+        ]
+    },
+]
+```
+
+#### Layer3 Interfaces - Custom Key/Value and Regex
+
+```
+>>> l3_interfaces = parser.get_l3_interfaces(ip_pim="ip pim.*")
+>>> for i in l3_interfaces:
+        print(i.name)
+        print(i.ip_pim)
+        print("!")
+
 Loopback100
 ip pim sparse-mode
-ip ospf 100 area 0
 !
 Loopback200
 ip pim sparse-mode
-None
 !
 ```
 
-### 1. Layer2 Interfaces:
+### Layer2 `Access` and `Trunk` Interface
 
-**Issue**: there are some Layer2 interfaces that by default dont have any configurations on them, and config_parser will only be able to determine the l2 or l3 if there are certain keywords in the config.
+#### `Access Port` List of Objects 
+ 
+ ```
 
-
-<hr>
-<hr>
-
-## Old Version < 2.0  
-
-There are two ways to parse the config, 1, SSH which is not recommended, and 2, feeding the running-config file 
-
-* to use file, use `ConfigParser(method="file", content=<your_file>, json=True/False)`. 
-* to use SSH:
-
-
-```python
-from cisco_config_parser import ConfigParserOld
-
-
-
-ConfigParserOld(
-    method="int_ssh",
-    ssh=True, 
-    user="username", 
-    password="password", 
-    device_type="cisco_ios", 
-    host="your_switch_ip",
-    )
-```
-device types that are accepted are:
-```ruby
-cisco_ios
-cisco_xe
-cisco_xr
-cisco_nxos
-```
-pass the kwargs then it will login to your device and does the `show running-config` and will parse it. 
-
-**if you select `json=True` then the object will return the result in json format. else, it would return as list of objects.**
-
-
-## Regex Search Strings:
-
-* to find lines in the configuration starting with "router"
-```ruby
-parse.find_parent_child("^router")
-```
-
-
-* to parse all confuguration into parent and child format
-```ruby
-parse.find_parent_child("^.")
-```
-
-
-* to find lines in the configuration that has "Loopback" in them
-```ruby
-parse.find_parent_child("^.*Loopback")
-
-```
-
-
-## Examples:
-
-* Parsing NXOS Config For All the Related VLAN Info.
-
-
-```ruby
-
->>> nxos_parser = ConfigParserOld(method="file", content=file1)
->>> vlan_info = nxos_parser.nxos_get_vlan_info()
->>> vlan_info.vlan = "2626"
->>> print(vlan_info.vlan)
-:return:
-!
-vlan 2626
-  name GRN200_nonPROD_APP_01
-  vn-segment 2002626
-!
-interface Vlan2626
-  description grn200 nonPROD App Servers 01
-  no shutdown
-  mtu 9216
-  vrf member GRN200
-  no ip redirects
-  ip address 10.147.148.1/24
-  no ipv6 redirects
-  fabric forwarding mode anycast-gateway
-!
-int nve1
-  member vni 2002626
-    suppress-arp
-    ingress-replication protocol bgp
-!
-evpn
-  vni 2002626 l2
-    rd auto
-    route-target import auto
-    route-target export aut
-
-```
-
-* Getting Routed Ports
-
-```ruby 
-
-from cisco_config_parser import ConfigParserOld
-
-my_file = "running-config.txt"
-
-parser = ConfigParserOld(method="file", content=my_file)
-
-obj = parser.ios_get_routed_port()
-
-for i in obj:
-    print(i.intf)
-    print(i.ip_add, i.mask)
-    print(i.subnet)
-    print(i.description)
-    print(i.vrf)
-    print(i.description)
-    print(i.state)
+>>> access_ports = parser.get_l2_access_interfaces()
+>>> 
+>>> for intf in access_ports:
+    print(intf.name)
+    print(intf.description)
+    print(intf.children)
     print("!")
-
-```
-output: 
-
-```
-interface TenGigE0/3/0/29.3240
-10.10.1.1 255.255.255.248
-10.10.1.0/29
- description Connected to device_A
- vrf vrf_A
- no shutdown
+... 
+GigabitEthernet1/1
+Data Users
+['description Data Users', 'switchport access vlan 200', 'switchport mode access', 'switchport voice vlan 700', 'no logging event power-inline-status', 'ip dhcp snooping information option allow-untrusted']
 !
-interface TenGigE0/3/0/29.3340
-10.244.10.1 255.255.255.252
-10.244.10.0/30
- description Connected to device_A
- vrf vrf_B
- no shutdown
-```
-
-* Getting Switchport:
-there are two different mode on switchport, `access` and `trunk`. you should specify the mode `mode=trunk` or `mode=access`. this way you will be able to access all the access-ports or trunk-ports by accessing the methods (get_access or get_trunk)
-
-```ruby
-
-from cisco_config_parser import ConfigParserOld
-
-my_file = "switch01_run_config.txt"
-
-parser = ConfigParserOld(method="file", content=my_file)
-
-obj = parser.ios_get_switchport(mode="access")
-
-for i in obj:
-    print(i.port)
-    print(i.vlan)
-    print(i.voice)
-    print(i.description)
-    print("!")
-
-for i in obj:
-    print(i.get_access)
-```
-
-output:
-
-```
-  
-interface GigabitEthernet10/38
-Access Port
-Vlan  200
-Voice  vlan 700
- description ent-user
+GigabitEthernet1/2
+Data Users
+['description Data Users', 'switchport access vlan 200', 'switchport mode access', 'switchport voice vlan 700', 'no logging event power-inline-status', 'ip dhcp snooping information option allow-untrusted']
 !
-interface GigabitEthernet10/38
-Access Port
-Vlan  200
-Voice  vlan 700
- description ent-user
 ```
 
-* Finding Routing Protocol
-```ruby
-    from cisco_config_parser import ConfigParserOld
-    
-    
-    my_file = "switch01_running_config.txt"
-    parse = ConfigParserOld(method="file", content=my_file)
-    
-    
-    obj_list = parse.find_parent_child("^router")
-    for i in obj_list:
-        print(i.parent)
-        for child_obj in i.child:
-            print(child_obj)
- 
- ```
- Output:
- 
- ```
- router eigrp 252
- !
- address-family ipv4 vrf vrf_A autonomous-system 252
-  network 10.10.10.0 0.0.0.63
-  passive-interface default
-  no passive-interface Vlan3123
-  no passive-interface Vlan3124
-  eigrp stub connected summary
- exit-address-family
- !
- address-family ipv4 vrf vrf_B autonomous-system 252
-  network 10.20.10.0 0.0.0.3
-  network 10.20.11.0 0.0.0.3
-  passive-interface default
-  no passive-interface Vlan3223
-  no passive-interface Vlan3224
-  eigrp stub connected summary
- exit-address-family
- !
-
- ```
- 
- * Finding Interface and Helper address Example 
-
-```ruby
-    from cisco_config_parser import ConfigParserOld
-
-
-    my_file = "switch01_running_config.txt"
-    parse = ConfigParserOld(method="file", content=my_file)
-    obj_list = parse.find_parent_child("^interface")
-
-    for i in obj_list:
-        vlan_200 = re.search("Vlan200", i.parent)
-        if vlan_200:
-            print(i.parent)
-            for c_obj in i.child:
-                if str(c_obj).startswith(" ip helper"):
-                    print(str(c_obj))
-```
-Output: 
+#### `Access Port` the json/dict format:
 
 ```
-interface Vlan200
- ip helper-address 192.168.1.10
- ip helper-address 172.31.10.10
+>>> access_ports = parser.get_l2_access_interfaces(return_json=True)
+
+>>> print(json.dumps(access_ports, indent=4))
+
+[
+    {
+        "name": "GigabitEthernet1/1",
+        "description": "DATA Users",
+        "data_vlan": "200",
+        "voice_vlan": "700",
+        "state": null,
+        "spanning_tree": null,
+        "native_vlan": null,
+        "children": [
+            "description DATA Users",
+            "switchport access vlan 200",
+            "switchport mode access",
+            "switchport voice vlan 700",
+            "no logging event power-inline-status",
+            "ip dhcp snooping information option allow-untrusted"
+        ]
+    },
+]
+```
+#### `Access Port` Custom Key/method search
+
+You can use your own custom regex with your own key, this key then become a dynamic method of the class where you can either call it or recieve it as json format. 
+
+
+```
+>>> access_ports = parser.get_l2_access_interfaces(logging="no loggin.*", return_json=True)
+
+>>> print(json.dumps(access_ports, indent=4))
+
+[
+    {
+        "name": "GigabitEthernet1/1",
+        "description": "SHC-Users",
+        "data_vlan": "200",
+        "voice_vlan": "700",
+        "state": null,
+        "spanning_tree": null,
+        "native_vlan": null,
+        "children": [
+            "description SHC-Users",
+            "switchport access vlan 200",
+            "switchport mode access",
+            "switchport voice vlan 700",
+            "no logging event power-inline-status",
+            "ip dhcp snooping information option allow-untrusted"
+        ],
+        "logging": "no logging event power-inline-status"                       <<<<< custom Key to find logging command
+    },
+]
 ```
 
-* Finding SVI in the config with all its child configuration
+#### `Trunk Port` List of Objects
 
-```ruby 
+```
+>>> trunk_interfaces = parser.get_l2_trunk_interfaces()
 
-from cisco_config_parser import ConfigParserOld
-
-
-
-my_file = "switch_01-run_config.txt"
-parser = ConfigParserOld(method="file", content=my_file)
-
-res = parser.ios_get_svi_objects()
-
-for i in res:
-    if "lan200" in i.intf:
-        print(i.intf)
-        print(i.ip_add)
-        print(i.description)
-        print(i.vrf)
-        print(i.state)
-        print(i.helper)
+>>> for intf in trunk_interfaces:
+        print(intf.name)
+        print(intf.description)
         print("!")
-```
 
-output:
-
-```
-interface Vlan200
- ip address 10.20.80.1 255.255.254.0
- description USER VLAN-
- ip vrf forwarding vrf_A
- no shutdown
-[' ip helper-address 10.10.1.10 ', ' ip helper-address 10.20.1.10']
+TenGigabitEthernet5/1
+(MP)SWITCH-SD03:Twe1/0/6
+!
+TenGigabitEthernet5/2
+Link to SWITCH-SA01 Te6/2 Decomm
+!
+TenGigabitEthernet6/1
+(MP)SWITCH-SD04:Te1/1
 !
 ```
+
+#### `Trunk Port` Json/Dict format
+
+```
+>>> trunk_interfaces = parser.get_l2_trunk_interfaces(return_json=True)
+>>> print(json.dumps(trunk_interfaces, indent=4))
+
+[
+    {
+        "name": "TenGigabitEthernet5/1",
+        "description": "(MP)SWITCH-SD03:Twe1/0/6",
+        "allowed_vlans": null,
+        "dhcp_snooping": null,
+        "dhcp_relay": null,
+        "voice_vlan": null,
+        "state": null,
+        "spanning_tree": null,
+        "native_vlan": "256",
+        "children": [
+            "description (MP)SWITCH-SD03:Twe1/0/6",
+            "switchport trunk native vlan 256",
+            "switchport trunk allowed vlan 182,256,504,1100,3101,3201,3301,3311,3321,3331",
+            "switchport trunk allowed vlan add 3351,3401,3411,3911",
+            "switchport mode trunk",
+            "load-interval 30",
+            "udld port aggressive",
+            "service-policy output egress_queueing",
+            "ip dhcp snooping trust"
+        ],
+        "allowed_vlan": "182,256,504,1100,3101,3201,3301,3311,3321,3331"
+    },
+]
+```
+#### `Trunk Port` Custom Key/method search
+
+```
+>>> access_ports = parser.parser.get_l2_trunk_interfaces(load="load.*", return_json=True)
+
+>>> print(json.dumps(access_ports, indent=4))
+
+    {
+        "name": "TenGigabitEthernet5/1",
+        "description": "(MP)SWITCH-SD03:Twe1/0/6",
+        "allowed_vlans": null,
+        "dhcp_snooping": null,
+        "dhcp_relay": null,
+        "voice_vlan": null,
+        "state": null,
+        "spanning_tree": null,
+        "native_vlan": "256",
+        "children": [
+            "description (MP)STNMED-LPCH-SD03:Twe1/0/6",
+            "switchport trunk native vlan 256",
+            "switchport trunk allowed vlan 182,256,504,1100,3101,3201,3301,3311,3321,3331",
+            "switchport trunk allowed vlan add 3351,3401,3411,3911",
+            "switchport mode trunk",
+            "load-interval 30",
+            "udld port aggressive",
+            "service-policy output egress_queueing",
+            "ip dhcp snooping trust"
+        ],
+        "allowed_vlan": "182,256,504,1100,3101,3201,3301,3311,3321,3331",
+        "load": "load-interval 30"                                      <<<<< Custom Key and Value
+    },
+```
+
+
+### Static Routes 
+
+**Features**
+- Parse Static Routes: Extract and parse static routing commands (ip route entries) from Cisco running configurations.
+- Convert to Python Objects: Represent these routes as structured Python objects, enabling programmatic manipulation and easy integration with Python-based tools.
+- Export to JSON/Dict: Convert static routing information into JSON or dictionary format, making it straightforward to use in web applications, APIs, or data storage solutions.
+
+
+
+
+
+## Contribution
+Contributions are welcome! To contribute:
+
+1. Fork this repository.
+2. Create a feature branch.
+3. Make your changes and add tests if applicable.
+4. Submit a pull request for review.
+5. Feel free to open an issue for any bug reports or feature requests.
+
+
+
+## License
+This project is licensed under the MIT License.
+
+### Key Improvements:
+1. **Title and Overview:** I emphasized the functionality of the library with clear mention of automation, parsing, and supported platforms.
+2. **Key Features:** I made the features section clearer and more structured.
+3. **Usage Example:** Added a usage example to make it easy for users to get started.
+4. **Installation:** Provided simple installation instructions using `pip`.
+5. **Contribution and License Sections:** These are standard in open-source projects and help potential contributors know how to get involved.
