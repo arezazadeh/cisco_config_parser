@@ -5,13 +5,13 @@ The **Cisco Configuration Parser** is a Python library designed for network auto
 
 ## Key Features
 
-### Platform Detection
+### <li>  Platform Detection
 This library is designed to be **platform agnostic**, meaning it can automatically determine the Cisco platform based on the syntax of the configuration file. In cases where the platform cannot be determined automatically, you can manually specify the platform by passing `platform="IOS/XR/NXOS"` to the parser.
 
-### Flexible Data Handling
+### <li>  Flexible Data Handling
 The parser can convert configuration data into either Python objects or JSON/dictionary formats. You can control the format by passing the `return_json=True` flag to the relevant method. This flexibility allows you to integrate with a wide range of automation workflows and tools.
 
-### Configuration Hierarchy Recognition
+### <li>  Configuration Hierarchy Recognition
 Cisco configurations often feature a mix of parent-child relationships and standalone entries. This library is adept at recognizing and parsing these patterns to capture both common and critical configuration attributes. For instance:
 
 - **Standalone Configuration Example:**
@@ -55,13 +55,13 @@ Some of those configs are as follow:
 ```
 Above configuration sections are captured along with the most common attributes/children. and the rest of them are captured inside method `obj.children`. 
 
-### Parent/Child Regex Parsing Capabilities
+### <li>  Parent/Child Regex Parsing Capabilities
 In addition to above default behavior or the library, you also have the option to pass your own regex to the `ConfigParser` as either `parent_regex=r"<custom_regex>", child_regex=r"<custom_regex>"` or only `parent_regex=r"<custom_regex>"`. 
 
 **Note:** If you pass both `parent_regex` and `child_regex`, the library attempt to search for the parent and the only child that you have searched for. If you would like to get all the children, then just pass the `parent_regex` to the class. I will have some example at the bottom this document. 
 
 
-## Install the package
+##  <li> Install the package
 This package is available on `pypi.org` you can install the package via `pip`.
 
 https://pypi.org/project/cisco-config-parser/
@@ -71,7 +71,7 @@ pip install cisco-config-parser
 ```
 
 
-## Current Classes in this library
+##  <li> Current Classes in this library
 
 ```python
 IOSStaticRouteConfig
@@ -86,7 +86,7 @@ ParentChildParser
 
 There more Classes are being built, and will be released in the upcoming versions. 
 
-## Get Example usage:
+## <li>  Get Example usage:
 A short documentation is embeded in the code base. you can view those example by importing `helper` and calling the class
 
 ```python
@@ -113,9 +113,9 @@ obj.get_static_routes() << Returns a list of objects
 obj.get_static_routes(return_json=True) << Returns a list of dictionaries 
 
 ```
-## Examples:
+##  <li> Examples:
 
-### Loading the Running-Config File 
+## <li>  Loading the Running-Config File 
 
 ```python
 >>> ios_file = "/Users/fileFolder/devFolder/config.txt"
@@ -128,7 +128,7 @@ obj.get_static_routes(return_json=True) << Returns a list of dictionaries
 ```
 
 
-### Layer3 Interface
+## <li>  Layer3 Interface
 
 In layer-3 interface, the class attempts to capture all the important attributes of the interface, such as:
 
@@ -141,7 +141,7 @@ In layer-3 interface, the class attempts to capture all the important attributes
 - HSRP or VRRP Config
     - VIP 
 
-#### Subnet list and their Usages 
+### <li> Subnet list and their Usages 
 
 One of the great feature in this library is it captures all the subnets that are being used in your Network Device along with their usage. 
 Also it tells you how many of each subnet masks are being used as well. I personaly use this feature when i need to automate DHCP/IPAM documentaion cleanup. 
@@ -175,7 +175,7 @@ Also it tells you how many of each subnet masks are being used as well. I person
 }
 ```
 
-#### Layer3 Interfaces - List of Objects
+### <li>  Layer3 Interfaces - List of Objects
 
 ```python
 >>> l3_interfaces = parser.get_l3_interfaces()
@@ -193,7 +193,7 @@ Loopback200
 Loopback202
 10.245.0.199 10.245.0.199/32
 ```
-#### Layer3 Interfaces - Json/Dict Format
+### <li>  Layer3 Interfaces - Json/Dict Format
 
 ```python
 >>> l3_interfaces = parser.get_l3_interfaces(return_json=True)
@@ -223,7 +223,7 @@ Loopback202
 ]
 ```
 
-#### Layer3 Interfaces - Custom Key/Value and Regex
+### <li>  Layer3 Interfaces - Custom Key/Value and Regex
 
 ```python
 >>> l3_interfaces = parser.get_l3_interfaces(ip_pim="ip pim.*")
@@ -240,9 +240,9 @@ ip pim sparse-mode
 !
 ```
 
-### Layer2 `Access` and `Trunk` Interface
+## <li>  Layer2 `Access` and `Trunk` Interface
 
-#### `Access Port` List of Objects 
+###  <li> `Access Port` List of Objects 
  
 ```python
 >>> access_ports = parser.get_l2_access_interfaces()
@@ -263,7 +263,7 @@ Data Users
 !
 ```
 
-#### `Access Port` the json/dict format:
+###  <li> `Access Port` the json/dict format:
 
 ```python
 >>> access_ports = parser.get_l2_access_interfaces(return_json=True)
@@ -290,7 +290,7 @@ Data Users
     },
 ]
 ```
-#### `Access Port` Custom Key/method search
+### <li>  `Access Port` Custom Key/method search
 
 You can use your own custom regex with your own key, this key then become a dynamic method of the class where you can either call it or recieve it as json format. 
 
@@ -322,7 +322,7 @@ You can use your own custom regex with your own key, this key then become a dyna
 ]
 ```
 
-#### `Trunk Port` List of Objects
+### <li> `Trunk Port` List of Objects
 
 ```python
 >>> trunk_interfaces = parser.get_l2_trunk_interfaces()
@@ -343,7 +343,7 @@ TenGigabitEthernet6/1
 !
 ```
 
-#### `Trunk Port` Json/Dict format
+### <li>  `Trunk Port` Json/Dict format
 
 ```python
 >>> trunk_interfaces = parser.get_l2_trunk_interfaces(return_json=True)
@@ -375,7 +375,7 @@ TenGigabitEthernet6/1
     },
 ]
 ```
-#### `Trunk Port` Custom Key/method search
+### <li> `Trunk Port` Custom Key/method search
 
 ```python
 >>> access_ports = parser.parser.get_l2_trunk_interfaces(load="load.*", return_json=True)
@@ -409,7 +409,7 @@ TenGigabitEthernet6/1
 ```
 
 
-## Static Route Config
+## <li> Static Route Config
 
 **Features**
 - Parse Static Routes: Extract and parse static routing commands (ip route entries) from Cisco running configurations.
@@ -447,9 +447,9 @@ static = parser.get_static_config()
 ```
 
 
-## Dynamic Route Config
+## <li> Dynamic Route Config
 
-### EIGRP 
+### <li> EIGRP 
 
 `eigrp_configs = parser.get_eigrp_config(return_json=True)`
 
@@ -530,7 +530,7 @@ static = parser.get_static_config()
 ]
 ```
 
-### BGP Route Config:
+### <li> BGP Route Config:
 
 **Example:**
 `bgp_configs = parser.get_bgp_config(return_json=True)`
@@ -611,7 +611,7 @@ static = parser.get_static_config()
 ]
 ```
 
-### OSPF Route Config
+### <li> OSPF Route Config
 
 In ospf, ConfigParser attemps to capture any interfaces that are participating in OSPF as well. 
 
@@ -657,7 +657,7 @@ In ospf, ConfigParser attemps to capture any interfaces that are participating i
 ]
 ```
 
-## Custom Parsing
+## <li> Custom Parsing
 
 **Example:**
 `custom_search = parser.get_parent_child(parent_regex="aaa.*", child_regex="server.*", return_json=True)`
