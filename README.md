@@ -15,13 +15,13 @@ The parser can convert configuration data into either Python objects or JSON/dic
 Cisco configurations often feature a mix of parent-child relationships and standalone entries. This library is adept at recognizing and parsing these patterns to capture both common and critical configuration attributes. For instance:
 
 - **Standalone Configuration Example:**
-```
+```bash
 hostname switch01.net
 ``` 
 
 - **Parent-Child Configuration Example:**
 
-```
+```bash
 Vlan 100                <<<< Parent
   name DATA_VLAN        <<<< Child
 ```
@@ -30,7 +30,7 @@ This library tries to captures the important and common attributes of the config
 
 Some of those configs are as follow:
 
-```
+```python
 - Hostname,
 - AAA, 
 - Interface,
@@ -117,7 +117,7 @@ obj.get_static_routes(return_json=True) << Returns a list of dictionaries
 
 ### Loading the Running-Config File 
 
-```
+```python
 >>> ios_file = "/Users/fileFolder/devFolder/config.txt"
 >>> with open(ios_file, "r") as f:
         running_config = f.read()
@@ -148,7 +148,7 @@ Also it tells you how many of each subnet masks are being used as well. I person
 
 **Example below illustriates this feature:**
 
-```
+```python
 >>> subnet_usage = parser.get_subnet_and_usage(include_subnet_count=True)
 >>> print(json.dumps(subnet_usage, indent=4))
 
@@ -177,7 +177,7 @@ Also it tells you how many of each subnet masks are being used as well. I person
 
 #### Layer3 Interfaces - List of Objects
 
-```
+```python
 >>> l3_interfaces = parser.get_l3_interfaces()
 >>>for l3 in l3_interfaces:
         print(l3.name)
@@ -195,7 +195,7 @@ Loopback202
 ```
 #### Layer3 Interfaces - Json/Dict Format
 
-```
+```python
 >>> l3_interfaces = parser.get_l3_interfaces(return_json=True)
 >>> print(json.dumps(l3_interfaces, indent=4))
 [
@@ -225,7 +225,7 @@ Loopback202
 
 #### Layer3 Interfaces - Custom Key/Value and Regex
 
-```
+```python
 >>> l3_interfaces = parser.get_l3_interfaces(ip_pim="ip pim.*")
 >>> for i in l3_interfaces:
         print(i.name)
@@ -244,8 +244,7 @@ ip pim sparse-mode
 
 #### `Access Port` List of Objects 
  
- ```
-
+```python
 >>> access_ports = parser.get_l2_access_interfaces()
 >>> 
 >>> for intf in access_ports:
@@ -266,7 +265,7 @@ Data Users
 
 #### `Access Port` the json/dict format:
 
-```
+```python
 >>> access_ports = parser.get_l2_access_interfaces(return_json=True)
 
 >>> print(json.dumps(access_ports, indent=4))
@@ -296,7 +295,7 @@ Data Users
 You can use your own custom regex with your own key, this key then become a dynamic method of the class where you can either call it or recieve it as json format. 
 
 
-```
+```python
 >>> access_ports = parser.get_l2_access_interfaces(logging="no loggin.*", return_json=True)
 
 >>> print(json.dumps(access_ports, indent=4))
@@ -325,7 +324,7 @@ You can use your own custom regex with your own key, this key then become a dyna
 
 #### `Trunk Port` List of Objects
 
-```
+```python
 >>> trunk_interfaces = parser.get_l2_trunk_interfaces()
 
 >>> for intf in trunk_interfaces:
@@ -346,7 +345,7 @@ TenGigabitEthernet6/1
 
 #### `Trunk Port` Json/Dict format
 
-```
+```python
 >>> trunk_interfaces = parser.get_l2_trunk_interfaces(return_json=True)
 >>> print(json.dumps(trunk_interfaces, indent=4))
 
@@ -378,7 +377,7 @@ TenGigabitEthernet6/1
 ```
 #### `Trunk Port` Custom Key/method search
 
-```
+```python
 >>> access_ports = parser.parser.get_l2_trunk_interfaces(load="load.*", return_json=True)
 
 >>> print(json.dumps(access_ports, indent=4))
