@@ -48,6 +48,10 @@ Some of those configs are as follow:
     - OSPF
     - IS-IS
     - BGP
+- VXLAN Related Configs (NXOS)
+    - BGP EVPN MP-BGP
+    - NVE Config 
+    - Anycast Gateway Config
 
 - Line-vty 
 - Line-con
