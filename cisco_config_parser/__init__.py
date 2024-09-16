@@ -6,7 +6,7 @@ _ALL_ = [
     "ConfigParserOld",
 ]
 
-__version__ = "1.4.6"
+__version__ = "2.2.5"
 __author__ = "Ahmad Rezazadeh"
 __email__ = "ahmad@klevernet.io"
 __url__ = "klevernet.ai"
