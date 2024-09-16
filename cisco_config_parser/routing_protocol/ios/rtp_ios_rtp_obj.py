@@ -37,13 +37,15 @@ class OSPFConfig:
 class EIGRPVrfChildren:
     vrf: str = None
     network: list = None
-    wild_card_mask: str = None
-    subnet: str = None
     passive_interface: list = None
     no_passive_interface: list = None
     auto_cost: str = None
     interfaces: list = None
     children: list = None
+
+    def get_dict(self):
+        # Recursively turn the instance into a dictionary
+        return self.__dict__
 
 
 @dataclass
@@ -51,8 +53,6 @@ class EIGRPConfig:
     as_number: str = None
     network: list = None
     vrf: str = "Global"
-    wild_card_mask: str = None
-    subnet: str = None
     has_vrf: bool = None
     vrf_count: int = None
     passive_interface: list = None
@@ -66,6 +66,13 @@ class EIGRPConfig:
     def __post_init__(self):
         if self.vrf_children is None:
             self.vrf_children = EIGRPVrfChildren()
+
+    def get_dict(self):
+        # Recursively turn the instance into a dictionary
+        parent = self.__dict__.copy()
+        parent["vrf_children"] = [child.get_dict() for child in self.vrf_children]
+        return parent
+
 
 
 

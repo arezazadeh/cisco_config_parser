@@ -135,6 +135,9 @@ class IOSEIGRPConfig:
 
             eigrp_object_list.append(eigrp_obj)
 
+        if return_json:
+            return [eigrp.get_dict() for eigrp in eigrp_object_list]
+
         return eigrp_object_list
 
 

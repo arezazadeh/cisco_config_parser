@@ -409,14 +409,279 @@ TenGigabitEthernet6/1
 ```
 
 
-### Static Routes 
+## Static Route Config
 
 **Features**
 - Parse Static Routes: Extract and parse static routing commands (ip route entries) from Cisco running configurations.
 - Convert to Python Objects: Represent these routes as structured Python objects, enabling programmatic manipulation and easy integration with Python-based tools.
 - Export to JSON/Dict: Convert static routing information into JSON or dictionary format, making it straightforward to use in web applications, APIs, or data storage solutions.
 
+#### Example
 
+**Python Object:**
+```python
+
+>>> static = parser.get_static_config()
+>>> for i in static:
+        print(i.subnet, i.name, i.nexthop_ip)
+
+0.0.0.0/0 MC-RS01 10.240.129.3
+0.0.0.0/0 NC-RS01 10.240.129.11
+10.243.98.32/28 P2P_Subnet 10.243.99.186
+```
+
+**Json/Dict:**
+```python
+static = parser.get_static_config()
+[
+    {
+        "network": "0.0.0.0",
+        "mask": "0.0.0.0",
+        "nexthop_ip": "10.240.129.3",
+        "subnet": "0.0.0.0/0",
+        "vrf": "default",
+        "name": "MC-RS01",
+        "admin_distance": null
+    },
+]
+```
+
+
+## Dynamic Route Config
+
+### EIGRP 
+
+`eigrp_configs = parser.get_eigrp_config(return_json=True)`
+
+```json
+[
+    {
+        "as_number": 300,
+        "network": [
+            {
+                "network": "10.242.96.240",
+                "subnet_mask": "255.255.255.252",
+                "wildcard_mask": "0.0.0.3"
+            },
+            {
+                "network": "10.242.97.244",
+                "subnet_mask": "255.255.255.252",
+                "wildcard_mask": "0.0.0.3"
+            },
+            {
+                "network": "10.242.98.248",
+                "subnet_mask": "255.255.255.252",
+                "wildcard_mask": "0.0.0.3"
+            },
+            {
+                "network": "10.242.99.252",
+                "subnet_mask": "255.255.255.252",
+                "wildcard_mask": "0.0.0.3"
+            }
+        ],
+        "vrf": "Global",
+        "wild_card_mask": null,
+        "subnet": null,
+        "has_vrf": true,
+        "vrf_count": 8,
+        "passive_interface": null,
+        "no_passive_interface": null,
+        "auto_cost": null,
+        "interfaces": null,
+        "children": [
+            "network 10.242.96.240 0.0.0.3",
+            "network 10.242.97.244 0.0.0.3",
+            "network 10.242.98.248 0.0.0.3",
+            "network 10.242.99.252 0.0.0.3",
+            "no passive-interface GigabitEthernet1/9",
+            "no passive-interface GigabitEthernet1/10",
+            "passive-interface default",
+            "no auto-summary"
+        ],
+        "vrf_children": [
+            {
+                "vrf": "mgt100",
+                "network": [
+                    {
+                        "network": "10.242.96.240",
+                        "subnet_mask": "255.255.255.252",
+                        "wildcard_mask": "0.0.0.3"
+                    }
+                ],
+                "wild_card_mask": null,
+                "subnet": null,
+                "passive_interface": null,
+                "no_passive_interface": null,
+                "auto_cost": null,
+                "interfaces": null,
+                "children": [
+                    "redistribute bgp 65240 metric 1000 100 255 1 1500 route-map MGT100_EIGRP_REDIST_BGP",
+                    "network 10.242.96.240 0.0.0.3",
+                    "passive-interface default",
+                    "no passive-interface TenGigabitEthernet1/9.3131",
+                    "distribute-list route-map route_map_inbound in",
+                    "autonomous-system 300",
+                    "exit-address-family"
+                ]
+            },
+        ]
+    }
+    
+]
+```
+
+### BGP Route Config:
+
+**Example:**
+`bgp_configs = parser.get_bgp_config(return_json=True)`
+
+```json
+[
+    {
+        "router_id": "10.240.129.45",
+        "vrf_list": [
+            "blu300",
+        ],
+        "vrf": "Global",
+        "network": [
+            "10.245.49.132/32"
+        ],
+        "peer_group": [
+            {
+                "peer_group": {
+                    "name": "RR",
+                    "remote_as": "65234",
+                    "update_source": "Loopback1",
+                    "route_map": {
+                        "in": "PEER_GROUP_RR_INBOUND",
+                        "out": "PEER_GROUP_RR_OUTBOUND"
+                    },
+                    "neighbors": [
+                        {
+                            "ip": "10.252.248.251",
+                            "description": "RR-Router-01"
+                        },
+                    ]
+                }
+            },
+        ],
+        "neighbors": null,
+        "redistribute": [
+            {
+                "vrf": "Global",
+                "protocol": "eigrp 100",
+                "route_map": ""
+            }
+        ],
+        "vrf_children": [
+            {
+                "vrf": "blu300",
+                "network": [
+                    "10.245.17.132/32"
+                ],
+                "peer_group": null,
+                "neighbors": [
+                    {
+                        "vrf": "blu300",
+                        "ip": "10.245.20.30",
+                        "remote_as": "65245",
+                        "description": "REMOTE_ROUTER-SA01_BLU300",
+                        "update_source": "TenGigabitEthernet10/14.3301",
+                        "route_map": {
+                            "in": "ALLVRF_BGP_RM_INBOUND",
+                            "out": "ALLVRF_BGP_RM_OUTBOUND"
+                        }
+                    }
+                ],
+                "redistribute": [
+                    {
+                        "vrf": "blu300",
+                        "protocol": "eigrp 252",
+                        "route_map": " BLU300_BGP_REDIST_EIGRP"
+                    },
+                    {
+                        "vrf": "blu300",
+                        "protocol": "static",
+                        "route_map": " BLU300_BGP_REDIST_STATIC"
+                    }
+                ],
+            }
+        ]
+    }
+]
+```
+
+### OSPF Route Config
+
+In ospf, ConfigParser attemps to capture any interfaces that are participating in OSPF as well. 
+
+**Example:**
+
+`ospf = parser.get_ospf_config(return_json=True)`
+
+```json
+[
+    {
+        "process_id": "240",
+        "router_id": "10.240.129.45",
+        "network": [
+            {
+                "network": "10.3.3.0",
+                "subnet_mask": "255.255.255.0",
+                "wildcard_mask": "0.0.0.255",
+                "area": "0"
+            }
+        ],
+        "wild_card_mask": null,
+        "subnet": null,
+        "vrf": null,
+        "passive_interface": [
+            {
+                "interface": "default"
+            }
+        ],
+        "no_passive_interface": [
+            {
+                "interface": "GigabitEthernet1/0"
+            }
+        ],
+        "auto_cost": "10000",
+        "interfaces": [
+            {
+                "interface": "Loopback0",
+                "area": "0",
+                "process_id": "240"
+            }
+        ]
+    }
+]
+```
+
+## Custom Parsing
+
+**Example:**
+`custom_search = parser.get_parent_child(parent_regex="aaa.*", child_regex="server.*", return_json=True)`
+
+```json
+
+[
+    {
+        "parent": "aaa group server tacacs+ ISE_TACACS",
+        "children": "server tacacs+ ISE_TACACS"
+    }
+]
+```
+
+
+
+## Future Enhancements
+I am actively working on expanding the capabilities of this library. Upcoming features include:
+
+- **Enhanced support for NXOS**: Additional parsing for NXOS-specific configurations and features.
+- **Full support for IOS-XR**: Expanding coverage for IOS-XR configurations to include more advanced routing and service configurations.
+- **More configuration sections**: Additional Cisco configuration types and attributes will be parsed in future releases.
+
+Stay tuned for these updates and more in future versions of the library!
 
 
 
