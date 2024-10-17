@@ -6,15 +6,11 @@ from dataclasses import dataclass
 
 @dataclass
 class StaticRoute:
-    network: str = None
-    mask: str = None
-    nexthop_ip: str = None
-    subnet: str = None
-    vrf: str = None
-    name: str = None
-    admin_distance: str = None
+    networks: list = None
 
-
+    def __post_init__(self):
+        if self.networks is None:
+            self.networks = []
 
 
 @dataclass

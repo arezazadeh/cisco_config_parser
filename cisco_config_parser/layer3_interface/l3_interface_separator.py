@@ -12,7 +12,7 @@ class L3InterfaceSeparator(Separator):
     def _is_l3_interface_section(self, section):
         interface_regex = re.search(r"^interface", section, flags=re.MULTILINE)
         if interface_regex:
-            l3_interface_regex = re.search(r"ip address", section, flags=re.MULTILINE)
+            l3_interface_regex = re.search(r"(ip address)|(ipv4 address)", section, flags=re.MULTILINE)
             if l3_interface_regex:
                 return True
             return False

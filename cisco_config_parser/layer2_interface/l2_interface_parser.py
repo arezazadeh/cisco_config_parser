@@ -147,7 +147,7 @@ class L2InterfaceParser:
                 l2_trunk_intf_cls.description = description_regex.group(1)
 
             if allowed_vlan_regex:
-                l2_trunk_intf_cls.allowed_vlan = allowed_vlan_regex.group(1)
+                l2_trunk_intf_cls.allowed_vlans = allowed_vlan_regex.group(1)
 
             if native_vlan_regex:
                 l2_trunk_intf_cls.native_vlan = native_vlan_regex.group(1)

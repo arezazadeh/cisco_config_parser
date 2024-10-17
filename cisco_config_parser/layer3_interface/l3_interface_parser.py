@@ -36,6 +36,7 @@ class L3InterfaceParser:
 
         l3_intf = L3InterfaceSeparator(self.content)
         l3_interfaces = l3_intf.find_all_l3_interfaces()
+
         l3_intf_objects = []
 
         for l3_interface in l3_interfaces:
@@ -89,7 +90,6 @@ class L3InterfaceParser:
             if description_regex:
                 l3_intf_cls.description = description_regex.group(1).strip()
 
-
             # if there are custom kwargs, search for the custom regex in the l3_interface section
             # if the regex is found, parse the line and store the value in the l3_intf_cls object
             if kwargs:
@@ -103,7 +103,6 @@ class L3InterfaceParser:
                         "l3_interface_obj": l3_intf_cls
                     }
                     l3_intf_cls = _L3SectionParser._parse_custom_regex(**custom_regex_kwargs)
-
 
             # append the l3_intf_cls object to the l3_intf_objects list
             l3_intf_objects.append(l3_intf_cls)
