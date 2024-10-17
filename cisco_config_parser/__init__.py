@@ -6,12 +6,12 @@ _ALL_ = [
     "ConfigParserOld",
 ]
 
-__version__ = "2.2.5"
+__version__ = "2.2.7"
 __author__ = "Ahmad Rezazadeh"
 __email__ = "ahmad@klevernet.io"
 __url__ = "klevernet.ai"
 __license__ = "MIT"
-__description__ = "A simple library to parse Cisco configuration files"
+__description__ = "library to parse and automate Cisco configuration files"
 
 
-__all__ = _ALL_
+__all__ = 'ConfigParser', 'ConfigParserOld'
