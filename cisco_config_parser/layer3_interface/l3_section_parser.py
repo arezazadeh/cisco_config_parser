@@ -19,7 +19,37 @@ class _L3SectionParser:
         return: l3_interface_obj
         """
 
-        def process_ip_address_with_cidr(ip_address_with_cidr, obj):
+
+        def cleanup_ip_address(ip_address_line_regex):
+            ip_address_regex = [ip_group for ip_group in ip_address_line_regex.groups() if ip_group]
+            if not ip_address_regex:
+                return None
+
+            if "/" in ip_address_regex[0]:
+                ip_address_config = ip_address_regex[0].split("/")
+                ip_addr = ip_address_config[0].strip()
+                cidr = ip_address_config[1].strip()
+                subnet_ = ipaddress.IPv4Network(f"{ip_addr}/{cidr}", strict=False)
+                return {
+                    "ip_address": ip_addr.strip(),
+                    "mask": str(subnet_.netmask),
+                    "subnet": str(subnet_).strip()
+                }
+
+            else:
+                ip_address_section = ip_address_regex[0].split()
+                ip_address = ip_address_section[0].strip()
+                mask = ip_address_section[1].strip()
+                subnet = str(ipaddress.IPv4Network(f"{ip_address}/{mask}", strict=False))
+                return {
+                    "ip_address": ip_address.strip(),
+                    "mask": mask.strip(),
+                    "subnet": subnet.strip()
+                }
+
+
+
+        def process_ip_address_with_cidr(ip_address_with_cidr, obj, primary=True):
             """
             Process the ip address with cidr
             :param ip_address_with_cidr: str
@@ -39,25 +69,36 @@ class _L3SectionParser:
         l3_interface_obj = kwargs.get("l3_interface_obj")
         primary = kwargs.get("primary", True)
 
-        ip_address_regex = [ip_group for ip_group in ip_address_line_regex.groups() if ip_group]
+        ip_info = cleanup_ip_address(ip_address_line_regex)
+        # ip_address_regex = [ip_group for ip_group in ip_address_line_regex.groups() if ip_group]
 
+        # print(ip_address_regex)
         # Check if the ip address has a CIDR - 10.1.1.1/24
-        if "/" in ip_address_regex[0]:
-            l3_interface_obj = process_ip_address_with_cidr(ip_address_regex[0], l3_interface_obj)
-            return l3_interface_obj
+        # if "/" in ip_address_regex[0]:
+        #
+        #     l3_interface_obj = process_ip_address_with_cidr(ip_address_regex[0], l3_interface_obj)
+        #     return l3_interface_obj
 
-        ip_address_section = ip_address_regex[0].split()
-        ip_address = ip_address_section[0].strip()
-        mask = ip_address_section[1].strip()
-        subnet = str(ipaddress.IPv4Network(f"{ip_address}/{mask}", strict=False))
+        # ip_address_section = ip_address_regex[0].split()
+        # ip_address = ip_address_section[0].strip()
+        # mask = ip_address_section[1].strip()
+        # subnet = str(ipaddress.IPv4Network(f"{ip_address}/{mask}", strict=False))
         if primary:
-            l3_interface_obj.ip_address = ip_address.strip()
-            l3_interface_obj.mask = mask.strip()
-            l3_interface_obj.subnet = subnet.strip()
+            l3_interface_obj.ip_address = ip_info["ip_address"].strip()
+            l3_interface_obj.mask = ip_info["mask"].strip()
+            l3_interface_obj.subnet = ip_info["subnet"].strip()
+
+            # l3_interface_obj.ip_address = ip_address.strip()
+            # l3_interface_obj.mask = mask.strip()
+            # l3_interface_obj.subnet = subnet.strip()
         else:
-            l3_interface_obj.sec_ip_address = ip_address.strip()
-            l3_interface_obj.sec_mask = mask.strip()
-            l3_interface_obj.sec_subnet = subnet.strip()
+            l3_interface_obj.sec_ip_address = ip_info["ip_address"].strip()
+            l3_interface_obj.sec_mask = ip_info["mask"].strip()
+            l3_interface_obj.sec_subnet = ip_info["subnet"].strip()
+
+            # l3_interface_obj.sec_ip_address = ip_address.strip()
+            # l3_interface_obj.sec_mask = mask.strip()
+            # l3_interface_obj.sec_subnet = subnet.strip()
 
         return l3_interface_obj
 
@@ -73,7 +114,9 @@ class _L3SectionParser:
         vrf_line_regex = kwargs.get("vrf_line_regex")
         l3_interface_obj = kwargs.get("l3_interface_obj")
         vrf = vrf_line_regex.groups()
+
         vrf = [vrf_group for vrf_group in vrf if vrf_group][0]
+
         l3_interface_obj.vrf = vrf.strip()
         return l3_interface_obj
 

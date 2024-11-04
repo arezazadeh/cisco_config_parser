@@ -28,10 +28,11 @@ INTERFACE_REGEX = re.compile(r"interface\s(.*)", flags=re.MULTILINE)
 # L3 Interface
 DESCRIPTION_REGEX = re.compile(r"description\s(.*)", flags=re.MULTILINE)
 IP_ADDRESS_REGEX = re.compile(r"ip\saddress\s(\d+\.\d+\.\d+\.\d+\s\d+\.\d+\.\d+\.\d+)|ip\saddress\s(\d+\.\d+\.\d+\.\d+/\d+)|ipv4\saddress\s(\d+\.\d+\.\d+\.\d+\s\d+\.\d+\.\d+\.\d+)|ipv4\saddress\s(\d+\.\d+\.\d+\.\d+/\d+)")
-IP_ADDRESS_CIDR_REGEX = re.compile(r"ip\saddress\s(\d+\.\d+\.\d+\.\d+/\d+)")
-HELPER_ADDRESS_REGEX = re.compile(r"ip\shelper-address\s(.*)")
-SECONDARY_IP_ADDRESS_REGEX = re.compile(r"ip\saddress\s(.*)secondary")
-VRF_REGEX = re.compile(r"ip\svrf\sforwarding\s(.*)|vrf\smember\s(.*)|vrf\s(.*)")
+# IP_ADDRESS_REGEX = re.compile(r"ipv?4?\saddress\s(\d+\.\d+\.\d+\.\d+)(\s\d+\.\d+\.\d+\.\d+|/\d+)?", flags=re.MULTILINE)
+IP_ADDRESS_CIDR_REGEX = re.compile(r"ip\saddress\s(\d+\.\d+\.\d+\.\d+/\d+)", flags=re.MULTILINE)
+HELPER_ADDRESS_REGEX = re.compile(r"ip\shelper-address\s(.*)", flags=re.MULTILINE)
+SECONDARY_IP_ADDRESS_REGEX = re.compile(r"^ip\saddress\s(.*)\ssecondary", flags=re.MULTILINE)
+VRF_REGEX = re.compile(r"^ip\svrf\sforwarding\s(.*)|^vrf\smember\s(.*)|^vrf\sforwarding\s(.*)|^vrf\s(\S+)$", flags=re.MULTILINE)
 
 
 
