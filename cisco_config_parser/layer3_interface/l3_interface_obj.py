@@ -11,6 +11,7 @@ class L3Interface:
     name: str = None
     description: str = None
     ip_address: str = None
+    ipv6_address: str = None
     mask: str = None
     subnet: str = None
     helpers: list = None

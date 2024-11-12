@@ -61,7 +61,7 @@ class L3InterfaceParser:
             vrf_regex = VRF_REGEX.search(l3_interface_stripped)
             helper_address_regex = HELPER_ADDRESS_REGEX.search(l3_interface_stripped)
             sec_ip_address_regex = SECONDARY_IP_ADDRESS_REGEX.search(l3_interface_stripped)
-
+            ipv6_address_regex = IPV6_ADDRESS_REGEX.search(l3_interface_stripped)
 
 
             # if the regex is found, parse the line and store the value in the l3_intf_cls object
@@ -92,6 +92,9 @@ class L3InterfaceParser:
 
             if description_regex:
                 l3_intf_cls.description = description_regex.group(1).strip()
+
+            if ipv6_address_regex:
+                l3_intf_cls.ipv6_address = ipv6_address_regex.group(1).strip()
 
             # if there are custom kwargs, search for the custom regex in the l3_interface section
             # if the regex is found, parse the line and store the value in the l3_intf_cls object

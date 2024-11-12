@@ -137,6 +137,7 @@ obj.get_static_routes(return_json=True) << Returns a list of dictionaries
 In layer-3 interface, the class attempts to capture all the important attributes of the interface, such as:
 
 - IPv4 Address
+- IPv6 Address
 - Subnet 
 - Subnet Mask
 - Secondary IPv4 Address
@@ -207,6 +208,7 @@ Loopback202
         "name": "Loopback100",
         "description": "SWITCH01-SA01 Loopback IP",
         "ip_address": "10.241.17.8",
+        "ipv6_address": "2001:DB8::1/64",
         "mask": "255.255.255.255",
         "subnet": "10.241.17.8/32",
         "helpers": null,
@@ -220,6 +222,7 @@ Loopback202
             "description SWITCH01-SA01 Loopback IP",
             "ip vrf forwarding mgt100",
             "ip address 10.241.17.8 255.255.255.255",
+            "ipv6 address 2001:DB8::1/64",
             "ip pim sparse-mode",
             "ip ospf 100 area 0"
         ]

@@ -33,7 +33,7 @@ IP_ADDRESS_CIDR_REGEX = re.compile(r"ip\saddress\s(\d+\.\d+\.\d+\.\d+/\d+)", fla
 HELPER_ADDRESS_REGEX = re.compile(r"ip\shelper-address\s(.*)", flags=re.MULTILINE)
 SECONDARY_IP_ADDRESS_REGEX = re.compile(r"^ip\saddress\s(.*)\ssecondary", flags=re.MULTILINE)
 VRF_REGEX = re.compile(r"^ip\svrf\sforwarding\s(.*)|^vrf\smember\s(.*)|^vrf\sforwarding\s(.*)|^vrf\s(\S+)$", flags=re.MULTILINE)
-
+IPV6_ADDRESS_REGEX = re.compile(r"ipv6\saddress\s(.*)", flags=re.MULTILINE)
 
 
 # L2 Interface
